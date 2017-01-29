@@ -1,0 +1,14 @@
+75e6bdcac222aa6263f96091ba9574c8 *DESCRIPTION
+9c25e1cdc3b5122842a6a70fab49a522 *LICENSE
+f248aa8bef6987a8a8680e8c1d5a54e0 *NAMESPACE
+b5ef7c29e7c994cdf03a4ca425142669 *NEWS.md
+52536a65294f1923a2c7e5796de91e53 *R/vistime-package.R
+e284cfa1b698469f89782e1f4284ea59 *R/vistime.R
+32dfe68e0f96737f0884e3daad5dbcaf *README.md
+e57dfd5c54fdc3b8197ccf58f80f184a *data/example.rda
+ad0771a1c7ce0c34db1e9fd7a03e9df3 *demo/00Index
+e120191c1f5cac2f1b6bde8f62a04bac *demo/school.R
+6945e333694cb2189fa3905e47455916 *inst/img/ex1.png
+d529b6905d9577cc65a34a9b682c3194 *inst/img/ex2.png
+a67eae95f0735e8ec25efe066bb9a223 *man/school.Rd
+5c54a0a2ae5f6bb2d0fd677624149074 *man/vistime.Rd
