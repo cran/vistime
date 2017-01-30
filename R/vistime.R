@@ -1,25 +1,41 @@
-#' Create an interactive timeline using the \code{plotly.js} framework.
-#' There are two types of events: those that define a range (i.e. have a start and end date) and points-in-time (where end date is NA or equal to start date). The data is distributed in a non-overlapping matter and coloured. It can then be edited via \code{plotly_build()} and e.g. be used in Shiny apps
+#' Time data that is provided is distributed and grouped in a non-overlapping matter. It can then be edited via \code{plotly_build()} and e.g. be used in Shiny apps. The process works offline.
 #'
-#' @param data data for time periods and events (data frame)
+#' @param data data.frame that contains the data to be visualised
 #' @param start (optional) the column name in \code{data} that contains start dates
 #' @param end (optional) the column name in \code{data} that contains end dates
 #' @param groups (optional) the column name in \code{data} to be used for grouping
 #' @param events (optional) the column name in \code{data} that contains event names
 #' @param colors (optional) the column name in \code{data} that contains colors for events
 #' @import plotly
+#' @export vistime
+#' @return \code{vistime} returns an object of class "\code{plotly}" and "\code{htmlwidget}".
 #' @examples
-#' data(example)
-#' \donttest{vistime(school, events = "Language", groups = "Room")}
+#' # basic example
+#' data(school)
+#' vistime(school, events = "Language", groups = "Room")
+#'
+#' # choose your own colors
+#' dat <- data.frame(Position=c(rep("President", 3), rep("Vice", 3)),
+#'                   Name = c("Washington", "Adams", "Jefferson", "Adams", "Jefferson", "Burr"),
+#'                   start = rep(c("1789-03-29", "1797-02-03", "1801-02-03"), 2),
+#'                   end = rep(c("1797-02-03", "1801-02-03", "1809-02-03"), 2),
+#'                   colors = c('#cbb69d', '#603913', '#c69c6e'))
+#'
+#' vistime(dat, events="Position", groups="Name")
 vistime <- function(data, start="start", end="end", groups="group", events="event", colors=NULL){
+
+  data <- data.frame(data)
 
   # error checking
   if(!is.data.frame(data)) stop(paste("Expected an input data frame, but encountered a", class(data)))
   if(sum(!is.na(data[, start])) < 1) stop(paste("error in start column: Please provide at least one point in time"))
-
-  # set column names
+  if(class(try(as.POSIXct(data[, start]), silent=T))[1] == "try-error") stop(paste("date format error: please provide full dates"))
+  if(! events %in% names(data)) stop("Please provide the name of the events column in parameter 'events'")
+  if(! start %in% names(data)) stop("Please provide the name of the start date column in parameter 'start'")
   if(! groups %in% names(data)) data$group <- ""
   if(! end %in% names(data)) data$end <- data[, start]
+
+  # set column names
   if(events == groups){
     data$group <- data[, groups]
   }else{
@@ -30,9 +46,9 @@ vistime <- function(data, start="start", end="end", groups="group", events="even
   names(data)[names(data)==events] <- "event"
 
   # sort out the classes
+  data <- as.data.frame(sapply(data, as.character), stringsAsFactors=F)
   data$start <- as.POSIXct(data$start)
   data$end <- as.POSIXct(data$end)
-  data[, c("event", "group")] <- sapply(data[, c("event", "group")], as.character)
 
   # fix missing ends for events
   if(any(is.na(data$end))) data$end[is.na(data$end)] <- data$start[is.na(data$end)]
@@ -119,8 +135,10 @@ vistime <- function(data, start="start", end="end", groups="group", events="even
     interval <- 60*60*2 # 2-hour-intervals
   }else if(total_range < 60*60*24*365){ # max 1 year
     interval <- 60*60*24*7 # 1-week-intervals
+  }else if(total_range < 60*60*24*365*10){ # max 20 years
+    interval <- 60*60*24 *30*6 # 6-months-intervals
   }else{
-    interval <- 60*60*24 *30*12 # 1-year-intervals
+    interval <- 60*60*24 *30*12*10 # 5-year-intervals
   }
 
   #############################################################################
@@ -165,7 +183,7 @@ vistime <- function(data, start="start", end="end", groups="group", events="even
     }
 
     return(p %>% layout(hovermode = 'closest',
-                        margin = list(l=max(nchar(data$event)) * 10),
+                        margin = list(l=max(nchar(data$group)) * 10),
                         # Axis options:
                         # 1. Remove gridlines
                         # 2. Customize y-axis tick labels and show group names instead of numbers
@@ -212,7 +230,7 @@ vistime <- function(data, start="start", end="end", groups="group", events="even
 
     # fix layout
     p <-  layout(p, hovermode = 'closest',
-                 margin = list(l=max(nchar(data$event)) * 10),
+                 margin = list(l=max(nchar(data$group)) * 10),
                  xaxis = list(showgrid = F, title=''),
                  yaxis = list(showgrid = F, title = '',
                               tickmode = "array", tickvals = 1:maxY,

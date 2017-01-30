@@ -1,6 +1,6 @@
 Package: vistime
 Title: Interactive R Timelines using 'plotly.js'
-Version: 0.1.0
+Version: 0.2.0
 Date: 2017-02-01
 Authors@R: person(
             "Sandro", "Raabe"
@@ -12,13 +12,13 @@ Description: Create fully interactive time lines or Gantt charts using 'plotly.j
 License: GPL-3 | file LICENSE
 URL: https://github.com/shosaco/vistime
 BugReports: https://github.com/shosaco/vistime/issues
-Depends: R (>= 3.1.0)
-Imports: plotly (>= 4.5.2), RColorBrewer (>= 1.1.2)
+Depends: R (>= 3.0.2)
+Imports: plotly (>= 4.0.0), RColorBrewer (>= 1.1.2)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2017-01-29 16:17:12 UTC; d90862
+Packaged: 2017-01-29 21:10:47 UTC; d90862
 Author: Sandro Raabe [aut, cre]
 Repository: CRAN
-Date/Publication: 2017-01-29 17:35:45
+Date/Publication: 2017-01-30 21:23:05
