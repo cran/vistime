@@ -1,10 +1,14 @@
-# 0.5.0 (dev)
-- added a new argument `showLabels` to choose whether or not the event labels shall be drawn - improves layout of dense timelines
-- new argument `lineInterval`: the distance in seconds that vertical lines shall be drawn (to reduce plot size and increase performance). When omitted, a heuristic is used (as before) is used.
-- improved heuristic of vertical line drawing
+# 0.6.0
+- Hotfix for broken y-axis labelling (introduced through new plotly package 1.8.0.)
+- events are now shown as circles (was: squares)
 - corrected font colors of Presidents example on help page
 
-# 0.4.0 (CRAN)
+# 0.5.0
+- added a new argument `showLabels` to choose whether or not the event labels shall be drawn - improves layout of dense timelines
+- new argument `lineInterval`: the distance in seconds that vertical lines shall be drawn (to reduce plot size and increase performance). When omitted, a heuristic (as before) is used.
+- improved heuristic of vertical line drawing
+
+# 0.4.0
 - line width calculation for ranges improved (thicker lines if less events happening simultaneously)
 - new parameter: `linewidth` to override the calculated line width for events
 - layout and labelling improvements

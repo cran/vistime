@@ -4,7 +4,6 @@
 \name{vistime}
 \alias{vistime}
 \alias{vistime-package}
-\alias{vistime}
 \title{vistime}
 \usage{
 vistime(data, events = "event", start = "start", end = "end",
@@ -15,44 +14,42 @@ vistime(data, events = "event", start = "start", end = "end",
 \arguments{
 \item{data}{data.frame that contains the data to be visualised}
 
-\item{events}{(optional) the column name in \code{data} that contains event names. Default: \code{"event"}.}
+\item{events}{(optional) the column name in \code{data} that contains event names. Default: \emph{event}.}
 
-\item{start}{(optional) the column name in \code{data} that contains start dates. Default: \code{"start"}.}
+\item{start}{(optional) the column name in \code{data} that contains start dates. Default: \emph{start}.}
 
-\item{end}{(optional) the column name in \code{data} that contains end dates. Default: \code{"end"}.}
+\item{end}{(optional) the column name in \code{data} that contains end dates. Default: \emph{end}.}
 
-\item{groups}{(optional) the column name in \code{data} to be used for grouping. Default: \code{"group"}.}
+\item{groups}{(optional) the column name in \code{data} to be used for grouping. Default: \emph{group}.}
 
-\item{colors}{(optional) the column name in \code{data} that contains colors for events. Default: \code{"color"}, if not present, colors are chosen via \code{RColorBrewer}.}
+\item{colors}{(optional) the column name in \code{data} that contains colors for events. Default: \emph{color}, if not present, colors are chosen via \code{RColorBrewer}.}
 
-\item{fontcolors}{(optional) the column name in \code{data} that contains the font color for event labels. Default: \code{"fontcolor"}, if not present, color will be \code{black}.}
+\item{fontcolors}{(optional) the column name in \code{data} that contains the font color for event labels. Default: \emph{fontcolor}, if not present, color will be black.}
 
-\item{tooltips}{(optional) the column name in \code{data} that contains the mouseover tooltips for the events. Default: \code{"tooltip"}, if not present, then tooltips are build from event name and date.}
+\item{tooltips}{(optional) the column name in \code{data} that contains the mouseover tooltips for the events. Default: \emph{tooltip}, if not present, then tooltips are build from event name and date.}
 
-\item{linewidth}{(optional) the linewidth for the events (typically used for large amount of parallel events). If not specified, then determined automatically.}
+\item{linewidth}{(optional) the linewidth for the events (typically used for large amount of parallel events). Default: heuristic value.}
 
-\item{title}{(optional) the title to be shown on top of the timeline}
+\item{title}{(optional) the title to be shown on top of the timeline. Default: \code{NULL}.}
 
-\item{showLabels}{(optional) choose whether or not event labels shall be visible}
+\item{showLabels}{(optional) choose whether or not event labels shall be visible. Default: \code{TRUE}.}
 
-\item{lineInterval}{(optional) the distance of vertical lines (in SECONDS) to demonstrate structure (default: heuristic, depending on total range)}
+\item{lineInterval}{(optional) the distance of vertical lines (in \emph{seconds}) to demonstrate structure (default: heuristic, depending on total range). Default: heuristic value.}
 }
 \value{
 \code{vistime} returns an object of class \code{plotly} and \code{htmlwidget}.
 }
 \description{
 Create interactive and offline timelines using the \code{plotly.js} framework.
-
-Time data that is provided is distributed and grouped in a non-overlapping matter. It can then be edited via \code{plotly_build()} and used in Shiny apps or Rmarkdown documents. The process works offline.
 }
 \examples{
 # presidents and vice presidents
-pres <- data.frame(Position=c(rep("President", 3), rep("Vice", 3)),
-                  Name = c("Washington", "Adams", "Jefferson", "Adams", "Jefferson", "Burr"),
-                  start = rep(c("1789-03-29", "1797-02-03", "1801-02-03"), 2),
-                  end = rep(c("1797-02-03", "1801-02-03", "1809-02-03"), 2),
+pres <- data.frame(Position = rep(c("President", "Vice"), each = 3),
+                  Name = c("Washington", rep(c("Adams", "Jefferson"), 2), "Burr"),
+                  start = c("1789-03-29", "1797-02-03", "1801-02-03"),
+                  end = c("1797-02-03", "1801-02-03", "1809-02-03"),
                   color = c('#cbb69d', '#603913', '#c69c6e'),
-                  rep(c("black", "white", "black"), 2))
+                  fontcolor = c("black", "white", "black"))
 
 vistime(pres, events="Position", groups="Name", title="Presidents of the USA",
               lineInterval = 60*60*24*365*5)

@@ -1,28 +1,28 @@
 #' Time data that is provided is distributed and grouped in a non-overlapping matter. It can then be edited via \code{plotly_build()} and used in Shiny apps or Rmarkdown documents. The process works offline.
 #'
 #' @param data data.frame that contains the data to be visualised
-#' @param events (optional) the column name in \code{data} that contains event names. Default: \code{"event"}.
-#' @param start (optional) the column name in \code{data} that contains start dates. Default: \code{"start"}.
-#' @param end (optional) the column name in \code{data} that contains end dates. Default: \code{"end"}.
-#' @param groups (optional) the column name in \code{data} to be used for grouping. Default: \code{"group"}.
-#' @param colors (optional) the column name in \code{data} that contains colors for events. Default: \code{"color"}, if not present, colors are chosen via \code{RColorBrewer}.
-#' @param fontcolors (optional) the column name in \code{data} that contains the font color for event labels. Default: \code{"fontcolor"}, if not present, color will be \code{black}.
-#' @param tooltips (optional) the column name in \code{data} that contains the mouseover tooltips for the events. Default: \code{"tooltip"}, if not present, then tooltips are build from event name and date.
-#' @param linewidth (optional) the linewidth for the events (typically used for large amount of parallel events). If not specified, then determined automatically.
-#' @param title (optional) the title to be shown on top of the timeline
-#' @param showLabels (optional) choose whether or not event labels shall be visible
-#' @param lineInterval (optional) the distance of vertical lines (in SECONDS) to demonstrate structure (default: heuristic, depending on total range)
+#' @param events (optional) the column name in \code{data} that contains event names. Default: \emph{event}.
+#' @param start (optional) the column name in \code{data} that contains start dates. Default: \emph{start}.
+#' @param end (optional) the column name in \code{data} that contains end dates. Default: \emph{end}.
+#' @param groups (optional) the column name in \code{data} to be used for grouping. Default: \emph{group}.
+#' @param colors (optional) the column name in \code{data} that contains colors for events. Default: \emph{color}, if not present, colors are chosen via \code{RColorBrewer}.
+#' @param fontcolors (optional) the column name in \code{data} that contains the font color for event labels. Default: \emph{fontcolor}, if not present, color will be black.
+#' @param tooltips (optional) the column name in \code{data} that contains the mouseover tooltips for the events. Default: \emph{tooltip}, if not present, then tooltips are build from event name and date.
+#' @param linewidth (optional) the linewidth for the events (typically used for large amount of parallel events). Default: heuristic value.
+#' @param title (optional) the title to be shown on top of the timeline. Default: \code{NULL}.
+#' @param showLabels (optional) choose whether or not event labels shall be visible. Default: \code{TRUE}.
+#' @param lineInterval (optional) the distance of vertical lines (in \emph{seconds}) to demonstrate structure (default: heuristic, depending on total range). Default: heuristic value.
 #' @import plotly
 #' @export vistime
 #' @return \code{vistime} returns an object of class \code{plotly} and \code{htmlwidget}.
 #' @examples
 #' # presidents and vice presidents
-#' pres <- data.frame(Position=c(rep("President", 3), rep("Vice", 3)),
-#'                   Name = c("Washington", "Adams", "Jefferson", "Adams", "Jefferson", "Burr"),
-#'                   start = rep(c("1789-03-29", "1797-02-03", "1801-02-03"), 2),
-#'                   end = rep(c("1797-02-03", "1801-02-03", "1809-02-03"), 2),
+#' pres <- data.frame(Position = rep(c("President", "Vice"), each = 3),
+#'                   Name = c("Washington", rep(c("Adams", "Jefferson"), 2), "Burr"),
+#'                   start = c("1789-03-29", "1797-02-03", "1801-02-03"),
+#'                   end = c("1797-02-03", "1801-02-03", "1809-02-03"),
 #'                   color = c('#cbb69d', '#603913', '#c69c6e'),
-#'                   rep(c("black", "white", "black"), 2))
+#'                   fontcolor = c("black", "white", "black"))
 #'
 #' vistime(pres, events="Position", groups="Name", title="Presidents of the USA",
 #'               lineInterval = 60*60*24*365*5)
@@ -248,11 +248,10 @@ vistime <- function(data, events="event", start="start", end="end", groups="grou
                         # 2. Customize y-axis tick labels and show group names instead of numbers
                         xaxis = list(showgrid = F, title = ''),
                         yaxis = list(showgrid = F, title = '',
-                                     tickmode = "array", tickvals = 1:maxY,
-                                     ticktext = c(rep("", (maxY-1)/2), # Leerzeilen
-                                                  as.character(toAdd$group), # group name in the center
-                                                  rep("", (maxY+1)/2)) # Leerzeilen
-                        )))
+                                     tickmode = "array",
+                                     tickvals = maxY/2, # the only tick shall be in the center of the axis
+                                     ticktext = as.character(toAdd$group[1])) # text for the tick (group name)
+                        ))
   })
 
 
@@ -282,7 +281,7 @@ vistime <- function(data, events="event", start="start", end="end", groups="grou
 
     # add all the markers for this Category
     p <- add_markers(p, x=~start, y=~y,
-                     marker = list(color = ~col, size=15, symbol="square",
+                     marker = list(color = ~col, size=15, symbol="circle",
                                    line = list(color = 'black', width = 1)),
                      showlegend = F, hoverinfo="text", text=~tooltip)
 
@@ -297,11 +296,10 @@ vistime <- function(data, events="event", start="start", end="end", groups="grou
     p <-  layout(p, hovermode = 'closest',
                  xaxis = list(showgrid = F, title=''),
                  yaxis = list(showgrid = F, title = '',
-                              tickmode = "array", tickvals = 1:maxY,
-                              ticktext = c(rep("", (maxY-1)/2), # Leerzeilen
-                                           thisData$group[1], # group name in the center
-                                           rep("", (maxY+1)/2)) # Leerzeilen
-                 ))
+                              tickmode = "array",
+                              tickvals = maxY/2, # the only tick shall be in the center of the axis
+                              ticktext = as.character(thisData$group[1])) # text for the tick (group name)
+                 )
   })
 
 
