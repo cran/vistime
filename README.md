@@ -1,7 +1,9 @@
 [![Donate](https://i.imgur.com/vCIGFrH.png)](https://www.paypal.me/shosaco/)
 [![CRAN](https://www.r-pkg.org/badges/version/vistime)](https://cran.r-project.org/package=vistime)
-[![dev](https://img.shields.io/badge/dev-0.7.0-green.svg)]()
+[![dev](https://img.shields.io/badge/dev-0.8.0-green.svg)]()
 [![Downloads](https://cranlogs.r-pkg.org/badges/last-week/vistime)](https://www.r-pkg.org/pkg/vistime)
+[![Build Status](https://travis-ci.com/shosaco/vistime.svg?branch=master)](https://travis-ci.com/shosaco/vistime)
+[![codecov](https://codecov.io/github/shosaco/vistime/branch/master/graphs/badge.svg)](https://codecov.io/github/shosaco/vistime) 
 
 vistime - Pretty Timeline Creation
 =========
@@ -31,24 +33,26 @@ If you find vistime useful, please consider supporting its development: <a href=
 
 ## 1. Installation
 
-To install the package from CRAN (v0.7.0):
+To install the package from CRAN (v0.8.0):
 
-```{r}
+```{r eval = FALSE}
 install.packages("vistime")
 ```
-<!-- To install the development version (v0.6.0.9000, most recent fixes and improvements, but not released on CRAN yet, see NEWS.md), run the following code in an R console:
-```{r}
+
+<!--
+To install the development version (v0.7.0.9000, most recent fixes and improvements, but not released on CRAN yet, see NEWS.md), run the following code in an R console: -->
+
+```{r eval = FALSE, echo = FALSE}
 if(!require("devtools")) install.packages("devtools")
 devtools::install_github("shosaco/vistime")
 ```
--->
 
 ## 2. Usage and standard arguments
 
-```{r}
+```{r eval  = FALSE}
 vistime(data, start = "start", end = "end", groups = "group", events = "event", colors = "color", 
               fontcolors = "fontcolor", tooltips = "tooltip", linewidth = NULL, 
-              title = NULL, showLabels = TRUE, background_lines = 11)
+              title = NULL, show_labels = TRUE, background_lines = 11)
 ```
 
 
@@ -66,7 +70,7 @@ fontcolors | optional | character | the column name in data that contains the fo
 tooltips | optional | character | the column name in data that contains the mouseover tooltips for the events. Default: *tooltip*, if not present, then tooltips are build from event name and date. [Basic HTML](https://help.plot.ly/adding-HTML-and-links-to-charts/#step-2-the-essentials) is allowed.
 linewidth | optional | numeric | override the calculated linewidth for events. Default: heuristic value.
 title | optional | character | the title to be shown on top of the timeline. Default: empty.
-showLabels | optional | logical | choose whether or not event labels shall be visible. Default: `TRUE`.
+show_labels | optional | logical | choose whether or not event labels shall be visible. Default: `TRUE`.
 background_lines | optional | integer | the number of vertical lines to draw in the background to demonstrate structure. Default: 10.
 
 ## 4. Value
@@ -77,7 +81,7 @@ background_lines | optional | integer | the number of vertical lines to draw in 
 ## 5. Examples  
 
 ### Ex. 1: Presidents
-```{r}
+```{r eval  = FALSE}
 pres <- data.frame(Position = rep(c("President", "Vice"), each = 3),
                    Name = c("Washington", rep(c("Adams", "Jefferson"), 2), "Burr"),
                    start = c("1789-03-29", "1797-02-03", "1801-02-03"),
@@ -90,7 +94,7 @@ vistime(pres, events="Position", groups="Name", title="Presidents of the USA")
 ![](inst/img/ex2.png)
 
 ### Ex. 2: Project Planning
-```{r}
+```{r eval  = FALSE}
 data <- read.csv(text="event,group,start,end,color
                        Phase 1,Project,2016-12-22,2016-12-23,#c8e6c9
                        Phase 2,Project,2016-12-23,2016-12-29,#a5d6a7
@@ -126,7 +130,7 @@ vistime(data)
 
 Once created, you can use `plotly::export()` for saving your vistime chart as PDF, PNG or JPEG:
 
-```{r}
+```{r eval  = FALSE}
 chart <- vistime(pres, events="Position")
 export(chart, file = "presidents.pdf")
 ```
@@ -137,7 +141,7 @@ Note that export requires the `webshot` package and additional arguments like wi
 
 Since the result of any call to `vistime(...)` is a `Plotly` object, you can use `plotlyOutput` in the UI and `renderPlotly` in the server of your [Shiny app](https://shiny.rstudio.com/) to display your chart:
 
-```{r}
+```{r eval  = FALSE}
 library(shiny)
 library(plotly)
 library(vistime)
@@ -167,7 +171,7 @@ The key is to first create a **simple Plotly example** yourself, turning it into
 ### Changing x-axis tick font size
 The following example creates the presidents example and manipulates the font size of the x axis ticks:
 
-```{r}
+```{r eval  = FALSE}
 pres <- data.frame(Position = rep(c("President", "Vice"), each = 3),
                    Name = c("Washington", rep(c("Adams", "Jefferson"), 2), "Burr"),
                    start = c("1789-03-29", "1797-02-03", "1801-02-03"),
@@ -190,7 +194,7 @@ pp
 ### Changing y-axis tick font size
 We have several y-axes, that's why we need to change the font size in all of them:
 
-```{r}
+```{r eval  = FALSE}
 # loop through the yaxes and change the font size for each element:
 for(i in grep("yaxis*", names(pp$x$layout))){
      pp$x$layout[[i]]$tickfont <- list(size = 28)
@@ -204,7 +208,7 @@ pp
 The following example creates the presidents example and manipulates the font size of the events:
 
 
-```{r}
+```{r eval  = FALSE}
 pres <- data.frame(Position = rep(c("President", "Vice"), each = 3),
                     Name = c("Washington", rep(c("Adams", "Jefferson"), 2), "Burr"),
                     start = c("1789-03-29", "1797-02-03", "1801-02-03"),
@@ -223,6 +227,11 @@ for(i in 1:length(pp$x$data)){
 }
 
 pp
+
+# or, using purrr:
+# text_idx <- which(purrr::map_chr(pp$x$data, "mode") == "text")
+# for(i in text_idx) pp$x$data[[i]]$textfont$size <- 28
+# pp
 ```
 ![](inst/img/ex2-eventfontsize.png)
 
@@ -230,8 +239,8 @@ pp
 The following example a simple example using markers and manipulates the size of the markers:
 
 
-```{r}
-dat <- data.frame(event = 1:4, start = c(Sys.Date(), Sys.Date() + 10))
+```{r eval  = FALSE}
+dat <- data.frame(event = 1:4, start =  c("2019-01-01", "2019-01-10"))
  
 p <- vistime(dat)
 
@@ -244,6 +253,11 @@ for(i in 1:length(pp$x$data)){
 }
 
 pp
+
+# or, using purrr:
+# marker_idx <- which(purrr::map_chr(pp$x$data, "mode") == "markers")
+# for(i in marker_idx) pp$x$data[[i]]$marker$size <- 10
+# pp
 ```
 
 ![](inst/img/ex3-markersize.png)

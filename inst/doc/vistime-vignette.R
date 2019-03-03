@@ -7,9 +7,9 @@ knitr::opts_chunk$set(
 ## ----eval=FALSE----------------------------------------------------------
 #  install.packages("vistime")
 
-## ------------------------------------------------------------------------
-if(!require("devtools")) install.packages("devtools")
-devtools::install_github("shosaco/vistime")
+## ----eval = FALSE, echo = FALSE------------------------------------------
+#  if(!require("devtools")) install.packages("devtools")
+#  devtools::install_github("shosaco/vistime")
 
 ## ----eval=FALSE----------------------------------------------------------
 #  library(vistime)
@@ -17,23 +17,7 @@ devtools::install_github("shosaco/vistime")
 ## ----eval=FALSE----------------------------------------------------------
 #  vistime(data, start = "start", end = "end", groups = "group", events = "event", colors = "color",
 #                fontcolors = "fontcolor", tooltips = "tooltip", linewidth = NULL,
-#                title = NULL, showLabels = TRUE, background_lines = 11)
-
-## ---- echo=FALSE, results='asis'-----------------------------------------
-knitr::kable(
-tibble::tribble(~parameter,  ~`optional?`, ~`data type`, ~explanation,
-"data", "mandatory", "data.frame", "data.frame that contains the data to be visualised",
-"start", "optional", "character", "the column name in data that contains start dates. Default: *start*",
-"end", "optional", "character", "the column name in data that contains end dates. Default: *end*",
-"groups", "optional", "character", "the column name in data to be used for grouping. Default: *group*",
-"events", "optional", "character", "the column name in data that contains event names. Default: *event*",
-"colors", "optional", "character", "the column name in data that contains colors for events. Default: *color*, if not present, colors are chosen via RColorBrewer.",
-"fontcolors", "optional", "character", "the column name in data that contains the font color for event labels. Default: *fontcolor*, if not present, color will be black.",
-"tooltips", "optional", "character", "the column name in data that contains the mouseover tooltips for the events. Default: *tooltip*, if not present, then tooltips are concatenated from event name and date. [Basic HTML](https://help.plot.ly/adding-HTML-and-links-to-charts/#step-2-the-essentials) is allowed.",
-"linewidth", "optional", "numeric", "override the calculated linewidth for events. Default: heuristic value.",
-"title", "optional", "character", "the title to be shown on top of the timeline. Default: empty.",
-"showLabels", "optional", "logical", "choose whether or not event labels shall be visible. Default: `TRUE`.",
-"background_lines", "optional", "integer", "the number of vertical lines to draw in the background to demonstrate structure. Default: 10."))
+#                title = NULL, show_labels = TRUE, background_lines = 11)
 
 ## ----eval=FALSE----------------------------------------------------------
 #  pres <- data.frame(Position = rep(c("President", "Vice"), each = 3),
@@ -45,7 +29,7 @@ tibble::tribble(~parameter,  ~`optional?`, ~`data type`, ~explanation,
 #  
 #  vistime(pres, events="Position", groups="Name", title="Presidents of the USA")
 
-## ----echo=FALSE, out.width = "100%"--------------------------------------
+## ---- echo=FALSE, out.width = "100%"-------------------------------------
 knitr::include_graphics("../inst/img/ex2.png")
 
 ## ----eval=FALSE----------------------------------------------------------
@@ -155,13 +139,18 @@ knitr::include_graphics("../inst//img/ex2-yfontsize.png")
 #      if(pp$x$data[[i]]$mode == "text") pp$x$data[[i]]$textfont$size <- 28
 #  }
 #  
+#  #' # or, using purrr:
+#  #' text_idx <- which(purrr::map_chr(pp$x$data, "mode") == "text")
+#  #' for(i in text_idx) pp$x$data[[i]]$textfont$size <- 28
+#  #' pp
+#  
 #  pp
 
 ## ----echo=FALSE, out.width = "50%"---------------------------------------
 knitr::include_graphics("../inst//img/ex2-eventfontsize.png")
 
 ## ----eval=FALSE----------------------------------------------------------
-#  dat <- data.frame(event = 1:4, start = c(Sys.Date(), Sys.Date() + 10))
+#  dat <- data.frame(event = 1:4, start = c("2019-01-01", "2019-01-10"))
 #  
 #  p <- vistime(dat)
 #  
@@ -174,6 +163,11 @@ knitr::include_graphics("../inst//img/ex2-eventfontsize.png")
 #  }
 #  
 #  pp
+#  
+#  # or, using purrr:
+#  # marker_idx <- which(purrr::map_chr(pp$x$data, "mode") == "markers")
+#  # for(i in marker_idx) pp$x$data[[i]]$marker$size <- 10
+#  # pp
 
 ## ----echo=FALSE, out.width = "50%"---------------------------------------
 knitr::include_graphics("../inst//img/ex3-markersize.png")
