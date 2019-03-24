@@ -12,7 +12,7 @@
 
 <meta name="author" content="Sandro Raabe" />
 
-<meta name="date" content="2019-03-03" />
+<meta name="date" content="2019-03-24" />
 
 <title>vistime - Pretty Timeline Creation</title>
 
@@ -300,7 +300,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">vistime - Pretty Timeline Creation</h1>
 <h4 class="author"><em>Sandro Raabe</em></h4>
-<h4 class="date"><em>2019-03-03</em></h4>
+<h4 class="date"><em>2019-03-24</em></h4>
 
 
 <div id="TOC">
@@ -330,8 +330,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p><strong>Feedback welcome:</strong> <a href="mailto:shosaco_nospam@hotmail.com" class="email">shosaco_nospam@hotmail.com</a></p>
 <div id="installation" class="section level2">
 <h2>1. Installation</h2>
-<p>To install the package from CRAN (v0.8.0):</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">install.packages</span>(<span class="st">&quot;vistime&quot;</span>)</a></code></pre></div>
+<p>To install the package (v0.8.0.9000):</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="cf">if</span>(<span class="op">!</span><span class="kw">require</span>(<span class="st">&quot;devtools&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)</a>
+<a class="sourceLine" id="cb1-2" title="2">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;shosaco/vistime&quot;</span>)</a></code></pre></div>
 <!-- To install the development version (v0.6.0.9000, most recent fixes and improvements, but not released on CRAN yet, see NEWS.md), run the following code in an R console:-->
 </div>
 <div id="usage" class="section level2">
@@ -341,7 +342,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>The basic syntax and all possible arguments are:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">vistime</span>(data, <span class="dt">start =</span> <span class="st">&quot;start&quot;</span>, <span class="dt">end =</span> <span class="st">&quot;end&quot;</span>, <span class="dt">groups =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">events =</span> <span class="st">&quot;event&quot;</span>, <span class="dt">colors =</span> <span class="st">&quot;color&quot;</span>, </a>
 <a class="sourceLine" id="cb3-2" title="2">              <span class="dt">fontcolors =</span> <span class="st">&quot;fontcolor&quot;</span>, <span class="dt">tooltips =</span> <span class="st">&quot;tooltip&quot;</span>, <span class="dt">linewidth =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb3-3" title="3">              <span class="dt">title =</span> <span class="ot">NULL</span>, <span class="dt">show_labels =</span> <span class="ot">TRUE</span>, <span class="dt">background_lines =</span> <span class="dv">11</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb3-3" title="3">              <span class="dt">title =</span> <span class="ot">NULL</span>, <span class="dt">show_labels =</span> <span class="ot">TRUE</span>, <span class="dt">background_lines =</span> <span class="dv">10</span>)</a></code></pre></div>
 </div>
 <div id="argument-details" class="section level2">
 <h2>3. Argument details</h2>

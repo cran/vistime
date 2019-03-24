@@ -1,7 +1,7 @@
 Package: vistime
 Title: Pretty Timeline Creation
-Version: 0.8.0
-Date: 2019-03-01
+Version: 0.8.1
+Date: 2019-03-24
 Authors@R: person(
             "Sandro", "Raabe"
             , role = c("aut", "cre")
@@ -23,7 +23,7 @@ RoxygenNote: 6.1.1
 Suggests: ggplot2, knitr, rmarkdown, devtools, testthat, covr, purrr
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2019-03-03 20:51:13 UTC; d90862
+Packaged: 2019-03-24 17:32:13 UTC; d90862
 Author: Sandro Raabe [aut, cre]
 Repository: CRAN
-Date/Publication: 2019-03-03 21:20:03 UTC
+Date/Publication: 2019-03-24 18:00:03 UTC
