@@ -21,6 +21,7 @@
 #' @param tooltips (optional, character) the column name in \code{data} that contains the
 #'   mouseover tooltips for the events. Default: \emph{tooltip}, if not present,
 #'   then tooltips are build from event name and date.
+#' @param optimize_y (optional, logical) distribute events on y-axis by smart heuristic (default), otherwise use order of input data.
 #' @param linewidth (optional, numeric) the linewidth (in pixel) for the events (typically used for
 #'   large amount of parallel events). Default: heuristic value.
 #' @param title (optional, character) the title to be shown on top of the timeline.
@@ -30,7 +31,6 @@
 #'   visible. Default: \code{TRUE}.
 #' @param lineInterval deprecated, use argument background_lines instead.
 #' @param background_lines (optional, integer) the number of vertical lines to draw in the background to demonstrate structure (default: 10). Less means more memory-efficient plot.
-#' @import plotly
 #' @export
 #' @return \code{vistime} returns an object of class \code{plotly} and \code{htmlwidget}.
 #' @examples
@@ -114,12 +114,15 @@
 #' pp
 #' }
 #'
-vistime <- function(data, events = "event", start = "start", end = "end", groups = "group", colors = "color", fontcolors = "fontcolor", tooltips = "tooltip", linewidth = NULL, title = NULL, showLabels = NULL, show_labels = TRUE, lineInterval = NULL, background_lines = 10) {
-  data <- validate_input(data, start, end, events, groups, linewidth, title, showLabels, show_labels, lineInterval, background_lines)
+vistime <- function(data, events = "event", start = "start", end = "end", groups = "group",
+                    colors = "color", fontcolors = "fontcolor", tooltips = "tooltip",
+                    optimize_y = TRUE, linewidth = NULL, title = NULL, showLabels = NULL,
+                    show_labels = TRUE, lineInterval = NULL, background_lines = 10) {
+  data <- validate_input(data, start, end, events, groups, tooltips, optimize_y, linewidth, title, showLabels, show_labels, lineInterval, background_lines)
   data <- set_colors(data, colors, fontcolors)
   data <- fix_columns(data, events, start, end, groups, tooltips)
   data <- set_subplots(data)
-  data <- set_y_values(data)
+  data <- set_y_values(data, optimize_y)
 
   ranges <- plot_ranges(data, linewidth, show_labels, background_lines)
   events <- plot_events(data, show_labels, background_lines)

@@ -5,8 +5,7 @@ knitr::opts_chunk$set(
 )
 
 ## ----eval=FALSE----------------------------------------------------------
-#  if(!require("devtools")) install.packages("devtools")
-#  devtools::install_github("shosaco/vistime")
+#  install.packages("vistime")
 
 ## ----eval = FALSE, echo = FALSE------------------------------------------
 #  if(!require("devtools")) install.packages("devtools")
@@ -17,7 +16,7 @@ knitr::opts_chunk$set(
 
 ## ----eval=FALSE----------------------------------------------------------
 #  vistime(data, start = "start", end = "end", groups = "group", events = "event", colors = "color",
-#                fontcolors = "fontcolor", tooltips = "tooltip", linewidth = NULL,
+#                fontcolors = "fontcolor", tooltips = "tooltip", optimize_y = TRUE, linewidth = NULL,
 #                title = NULL, show_labels = TRUE, background_lines = 10)
 
 ## ----eval=FALSE----------------------------------------------------------

@@ -12,7 +12,7 @@ plot_glued <- function(data, title, ranges, events) {
   plotList <- append(ranges, events)
 
   # sort plotList according to subplots, such that ranges and events stand together
-  plotList <- plotList[order(names(plotList))]
+  plotList <- plotList[order(as.integer(names(plotList)))]
 
   # determine heights of the subplots
   heightsAbsolute <- sapply(
@@ -23,10 +23,9 @@ plot_glued <- function(data, title, ranges, events) {
   )
   heightsRelative <- heightsAbsolute / sum(heightsAbsolute)
 
-  subplot(plotList, nrows = length(plotList), shareX = T, margin = 0,
-          heights = heightsRelative) %>%
-    layout(
-      title = title,
-      margin = list(l = max(nchar(data$group)) * 8)
-    )
+  plotly::layout(plotly::subplot(plotList, nrows = length(plotList), shareX = T, margin = 0,
+                                 heights = heightsRelative),
+                 title = title,
+                 margin = list(l = max(nchar(data$group)) * 8)
+  )
 }
