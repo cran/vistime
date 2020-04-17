@@ -1,14 +1,14 @@
 [![Donate](https://i.imgur.com/vCIGFrH.png)](https://www.paypal.me/shosaco/)
 [![CRAN](https://www.r-pkg.org/badges/version/vistime)](https://cran.r-project.org/package=vistime)
-<!-- [![dev](https://img.shields.io/badge/dev-0.8.1.9000-green.svg)]() -->
+[![dev](https://img.shields.io/badge/dev-1.0.0-green.svg)](https://github.com/shosaco/vistime/blob/master/NEWS.md)
 [![Downloads](https://cranlogs.r-pkg.org/badges/last-week/vistime)](https://www.r-pkg.org/pkg/vistime)
 [![Build Status](https://travis-ci.com/shosaco/vistime.svg?branch=master)](https://travis-ci.com/shosaco/vistime)
 [![codecov](https://codecov.io/github/shosaco/vistime/branch/master/graphs/badge.svg)](https://codecov.io/github/shosaco/vistime) 
 
-vistime - Pretty Timeline Creation
+vistime - Pretty Timelines
 =========
 
-Create interactive timelines or Gantt charts that are usable in the RStudio viewer pane, in R Markdown documents and in Shiny apps. Hover the mouse pointer over a point or task to show details or drag a rectangle to zoom in. Timelines and their components can afterwards be manipulated using `plotly_build()`, which transforms the plot into a mutable list.
+A library for creating time-based charts, like Gantt or timelines. Possible outputs include `ggplot`s, `plotly` graphs or `data.frame`s. Results can be used in the RStudio viewer pane, in R Markdown documents or in Shiny apps. In the interactive `plotly` output, you can hover the mouse pointer over a point or task to show details or drag a rectangle to zoom in. Timelines and their components can afterwards be manipulated using `plotly_build`, which transforms the plot into a mutable list. When choosing the `data.frame` output, you can use your own plotting engine for visualising the graph.
 
 If you find vistime useful, please consider supporting its development: <a href="https://www.paypal.me/shosaco/"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" /> </a>
 
@@ -16,29 +16,63 @@ If you find vistime useful, please consider supporting its development: <a href=
 
 ## Table of Contents
 
-1. [Installation](#1-installation)
-2. [Usage](#2-usage)
-3. [Arguments](#3-arguments)
-4. [Value](#4-value)
-5. [Examples](#5-examples)
+1. [Main functionality](#1-main-functionality)
+2. [Installation](#2-installation)
+3. [Usage](#3-usage-and-default-arguments)
+4. [Arguments](#4-arguments)
+5. [Value](#5-value)
+6. [Examples](#6-examples)
    * [Ex. 1: Presidents](#ex-1-presidents)
    * [Ex. 2: Project Planning](#ex-2-project-planning)
-6. [Exporting](#6-export-of-vistime-as-pdf-or-png)
-7. [Usage in Shiny apps](#7-usage-in-shiny-apps)
-8. [Customization](#8-customization)
+7. [Exporting](#7-export-of-vistime-as-pdf-or-png)
+8. [Usage in Shiny apps](#8-usage-in-shiny-apps)
+9. [Customization](#9-customization)
    * [Changing x-axis tick font size](#changing-x-axis-tick-font-size)
    * [Changing y-axis tick font size](#changing-y-axis-tick-font-size)
    * [Changing events font size](#changing-events-font-size)
    * [Changing marker size](#changing-marker-size)
 
-## 1. Installation
+## 1. Main functionality
 
-To install the package from CRAN (v0.8.1), type the following in your R console:
+This package `vistime` provides three main functions: 
+
+### 1) `vistime()` to produce interactive `Plotly` charts:
+
+```{r}
+timeline_data <- data.frame(event=c("Event 1", "Event 2"), start = c("2020-06-06", "2020-10-01"), end = c("2020-10-01", "2020-12-31"), group = "My Events")
+vistime(timeline_data)
+```
+<img src="inst/img/basic_plotly.png" />
+
+### 2) `gg_vistime()` to produce static `ggplot` output:
+
+```{r}
+timeline_data <- data.frame(event=c("Event 1", "Event 2"), start = c("2020-06-06", "2020-10-01"), end = c("2020-10-01", "2020-12-31"), group = "My Events")
+gg_vistime(timeline_data)
+```
+<img src="inst/img/basic_ggplot.png" />
+
+### 3)  `vistime_data()`, for pure `data.frame` output that you can use with the plotting engine of your choice: 
+
+```{r}
+timeline_data <- data.frame(event=c("Event 1", "Event 2"), start = c("2020-06-06", "2020-10-01"), end = c("2020-10-01", "2020-12-31"), group = "My Events")
+vistime_data(timeline_data)
+
+#>     event      start        end     group                                      tooltip      col subplot   y
+#> 1 Event 1 2020-06-06 2020-10-01 My Events  from <b>2020-06-06</b> to <b>2020-10-01</b>  #8DD3C7       1   1
+#> 2 Event 2 2020-10-01 2020-12-31 My Events  from <b>2020-10-01</b> to <b>2020-12-31</b>  #FFFFB3       1   1
+```
+
+You want to use this for the intelligent y-axis assignment depending on overlapping of events (this can be disabled with `optimize_y = FALSE`).
+
+## 2. Installation
+
+To install the package from CRAN (v0.9.0), type the following in your R console:
 ```{r}
 install.packages("vistime")
 ```
 
-To install the development version (v0.8.1.9000, containing most recent fixes and improvements, but not released on CRAN yet, see NEWS.md), run the following code in an R console:
+To install the development version containing most recent fixes and improvements, but not released on CRAN yet, see NEWS.md), run the following code in an R console:
 
 ```{r}
 if(!require("devtools")) install.packages("devtools")
@@ -46,15 +80,24 @@ devtools::install_github("shosaco/vistime")
 ```
 
 
-## 2. Usage and standard arguments
+## 3. Usage and default arguments
+
+The simplest way to create a timeline is by providing a data frame with `event` and `start` columns. If your columns are named otherwise, you need to tell the function. You can also tweak the y positions, linewidth, title, label visibility and number of lines in the background.
 
 ```{r}
 vistime(data, start = "start", end = "end", groups = "group", events = "event", colors = "color", 
               fontcolors = "fontcolor", tooltips = "tooltip", optimize_y = TRUE, linewidth = NULL, 
               title = NULL, show_labels = TRUE, background_lines = 10)
+
+gg_vistime(data, start = "start", end = "end", groups = "group", events = "event", colors = "color", 
+           fontcolors = "fontcolor", optimize_y = TRUE, linewidth = NULL, 
+           title = NULL, show_labels = TRUE, background_lines = 10)
+
+vistime_data(data, start = "start", end = "end", groups = "group", events = "event", colors = "color", 
+             fontcolors = "fontcolor", tooltips = "tooltip", optimize_y = TRUE)
 ```
 
-## 3. Arguments
+## 4. Arguments
 
 parameter | optional? | data type | explanation 
 --------- |----------- | -------- | ----------- 
@@ -72,12 +115,11 @@ title | optional | character | the title to be shown on top of the timeline. Def
 show_labels | optional | logical | choose whether or not event labels shall be visible. Default: `TRUE`.
 background_lines | optional | integer | the number of vertical lines to draw in the background to demonstrate structure. Default: 10.
 
-## 4. Value
+## 5. Value
 
-`vistime` returns an object of class `plotly` and `htmlwidget`.
+`vistime` returns an object of class `plotly` and `htmlwidget`, `gg_vistime` returns an object of class `gg` and `ggplot` and `vistime_data` returns an object of class `data.frame`.
 
-
-## 5. Examples  
+## 6. Examples  
 
 ### Ex. 1: Presidents
 ```{r}
@@ -104,7 +146,6 @@ data <- read.csv(text="event,group,start,end,color
                        Room 335,Team 1,2017-01-05,2017-01-23,#9ECAE1
                        Group 1,Team 2,2016-12-22,2016-12-28,#E5F5E0
                        Group 2,Team 2,2016-12-28,2017-01-23,#C7E9C0
-                       1-217.0,category 2,2016-12-27,2016-12-27,#90caf9
                        3-200,category 1,2016-12-25,2016-12-25,#1565c0
                        3-330,category 1,2016-12-25,2016-12-25,#1565c0
                        3-223,category 1,2016-12-28,2016-12-28,#1565c0
@@ -112,6 +153,7 @@ data <- read.csv(text="event,group,start,end,color
                        3-226,category 1,2016-12-28,2016-12-28,#1565c0
                        3-226,category 1,2017-01-19,2017-01-19,#1565c0
                        3-330,category 1,2017-01-19,2017-01-19,#1565c0
+                       1-217.0,category 2,2016-12-27,2016-12-27,#90caf9
                        4-399.7,moon rising,2017-01-13,2017-01-13,#f44336
                        8-831.0,sundowner drink,2017-01-17,2017-01-17,#8d6e63
                        9-984.1,birthday party,2016-12-22,2016-12-22,#90a4ae
@@ -125,20 +167,48 @@ vistime(data)
 
 <img src="inst/img/ex3.png" />
 
-## 6. Export of vistime as PDF or PNG
 
-Once created, you can use `plotly::export()` for saving your vistime chart as PDF, PNG or JPEG:
+### Ex. 3: Gantt Charts
 
-```{r
-chart <- vistime(pres, events="Position")
-export(chart, file = "presidents.pdf")
+The argument `optimize_y` can be used to change the look of the timeline. `TRUE` (the default) will find a nice heuristic to save `y`-space, distributing the events:
+
+```{r}
+data <- read.csv(text="event,start,end
+                       Phase 1,2020-12-15,2020-12-24
+                       Phase 2,2020-12-23,2020-12-29
+                       Phase 3,2020-12-28,2021-01-06
+                       Phase 4,2021-01-06,2021-02-02")
+        
+vistime(data, optimize_y = TRUE)
 ```
 
-Note that export requires the `webshot` package and additional arguments like width or height can be used (`?webshot` for the details).
+<img src="inst/img/optimize_y_T.png" />
 
-## 7. Usage in Shiny apps
 
-Since the result of any call to `vistime(...)` is a `Plotly` object, you can use `plotlyOutput` in the UI and `renderPlotly` in the server of your [Shiny app](https://shiny.rstudio.com/) to display your chart:
+`FALSE` will plot events as-is, not saving any space:
+
+```{r}
+vistime(data, optimize_y = FALSE)
+```
+
+<img src="inst/img/optimize_y_F.png" />
+
+
+## 7. Export of vistime as PDF or PNG
+
+Once created, you can use `plotly::export()` for saving your vistime chart (the plotly version) as PDF, PNG or JPEG:
+
+```{r
+# webshot::install_phantomjs()
+chart <- vistime(pres, events="Position")
+plotly::export(chart, file = "presidents.pdf")
+```
+
+Note that export requires the `webshot` package and additional arguments like width or height can be used (`?webshot` for the details). You can also download the plot as PNG by using the toolbar on the upper right side of the generated plot.
+
+## 8. Usage in Shiny apps
+
+The result of any call to `vistime(...)` is a `Plotly` object, so you can use `plotlyOutput()` in the UI and `renderPlotly()` in the server of your [Shiny app](https://shiny.rstudio.com/) to display your chart. The same goes for `gg_vistime(...)`, `plotOutput()` and `renderPlot()`:
 
 ```{r}
 library(shiny)
@@ -162,10 +232,10 @@ shinyApp(
 )
 ```
 
-## 8. Customization
-The function `plotly_build` turns your plot into a list. You can then use the function `str` to explore the structure of your plot. You can even manipulate all the elements there.
+## 9. Customization
+The function `plotly_build()` from package `plotly` turns your plot into a list. You can then use the function `str` to explore the structure of your plot. You can even manipulate all the elements there.
 
-The key is to first create a **simple Plotly example** yourself, turning it into a list (using `plotly_build`) and **exploring the resulting list** regarding the naming of the relevant attributes. Then manipulate or create them in your vistime example accordingly. Below are some examples of common solutions.
+The key is to first create a **simple Plotly example** yourself, turning it into a list (using `plotly_build()`) and **exploring the resulting list** regarding the naming of the relevant attributes. Then manipulate or create them in your vistime example accordingly. Below are some examples of common solutions.
 
 ### Changing x-axis tick font size
 The following example creates the presidents example and manipulates the font size of the x axis ticks:
@@ -181,6 +251,7 @@ pres <- data.frame(Position = rep(c("President", "Vice"), each = 3),
 p <- vistime(pres, events="Position", groups="Name", title="Presidents of the USA")
 
 # step 1: transform into a list
+library(plotly)
 pp <- plotly_build(p)
 
 # step 2: change the font size
@@ -191,13 +262,10 @@ pp
 <img src="inst/img/ex2-tickfontsize.png" />
 
 ### Changing y-axis tick font size
-We have several y-axes, that's why we need to change the font size in all of them:
+We need to change the font size of the y-axis:
 
 ```{r}
-# loop through the yaxes and change the font size for each element:
-for(i in grep("yaxis*", names(pp$x$layout))){
-     pp$x$layout[[i]]$tickfont <- list(size = 28)
-}
+pp$x$layout[["yaxis"]]$tickfont <- list(size = 28)
 
 pp
 ```
@@ -218,10 +286,11 @@ pres <- data.frame(Position = rep(c("President", "Vice"), each = 3),
 p <- vistime(pres, events="Position", groups="Name", title="Presidents of the USA")
 
 # step 1: transform into a list
+library(plotly)
 pp <- plotly_build(p)
 
 # step 2: loop over pp$x$data, and change the font size of all text elements to 28
-for(i in 1:length(pp$x$data)){
+for(i in seq_len(length(pp$x$data))){
     if(pp$x$data[[i]]$mode == "text") pp$x$data[[i]]$textfont$size <- 28
 }
 
@@ -244,10 +313,11 @@ dat <- data.frame(event = 1:4, start =  c("2019-01-01", "2019-01-10"))
 p <- vistime(dat)
 
 # step 1: transform into a list
+library(plotly)
 pp <- plotly_build(p)
 
 # step 2: loop over pp$x$data, and change the marker size of all text elements to 50px
-for(i in 1:length(pp$x$data)){
+for(i in seq_len(length(pp$x$data)){
     if(pp$x$data[[i]]$mode == "markers") pp$x$data[[i]]$marker$size <- 10
 }
 

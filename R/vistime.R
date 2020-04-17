@@ -1,10 +1,10 @@
-#' Create a Timeline
+#' Create a Timeline rendered by Plotly
 #'
-#' Provide a data frame with event data to create a visual timeline plot.
+#' Provide a data frame with event data to create a visual and interactive timeline plot.
 #' Simplest drawable dataframe can have columns `event` and `start`.
 #'
-#' @param data (required) \code{data.frame} that contains the data to be visualised
-#' @param events (optional) the column name in \code{data} that contains event
+#' @param data \code{data.frame} that contains the data to be visualised
+#' @param events (optional, character) the column name in \code{data} that contains event
 #'   names. Default: \emph{event}.
 #' @param start (optional, character) the column name in \code{data} that contains start
 #'   dates. Default: \emph{start}.
@@ -21,18 +21,19 @@
 #' @param tooltips (optional, character) the column name in \code{data} that contains the
 #'   mouseover tooltips for the events. Default: \emph{tooltip}, if not present,
 #'   then tooltips are build from event name and date.
-#' @param optimize_y (optional, logical) distribute events on y-axis by smart heuristic (default), otherwise use order of input data.
-#' @param linewidth (optional, numeric) the linewidth (in pixel) for the events (typically used for
-#'   large amount of parallel events). Default: heuristic value.
+#' @param optimize_y (optional, logical) distribute events on y-axis by smart heuristic
+#'   (default), otherwise use order of input data.
+#' @param linewidth (optional, numeric) the linewidth (in pixel) for the events
+#'   (typically used for large amount of parallel events). Default: heuristic value.
 #' @param title (optional, character) the title to be shown on top of the timeline.
 #'   Default: \code{NULL}.
-#' @param showLabels deprecated and replaced by argument show_labels.
 #' @param show_labels (optional, boolean) choose whether or not event labels shall be
 #'   visible. Default: \code{TRUE}.
-#' @param lineInterval deprecated, use argument background_lines instead.
-#' @param background_lines (optional, integer) the number of vertical lines to draw in the background to demonstrate structure (default: 10). Less means more memory-efficient plot.
+#' @param background_lines (optional, integer) the number of vertical lines to draw in the
+#'   background to demonstrate structure (default: 10). Less means more memory-efficient plot.
 #' @export
 #' @return \code{vistime} returns an object of class \code{plotly} and \code{htmlwidget}.
+#'  See `gg_vistime` for the static `ggplot` version.
 #' @examples
 #' # presidents and vice presidents
 #' pres <- data.frame(
@@ -48,6 +49,20 @@
 #'
 #'
 #' \dontrun{
+#' # Argument`optimize_y` can be used to change the look of the timeline. `TRUE` (the default)
+#' # will find a nice heuristic to save `y`-space, distributing the events:
+#' data <- read.csv(text="event,start,end
+#'                        Phase 1,2020-12-15,2020-12-24
+#'                        Phase 2,2020-12-23,2020-12-29
+#'                        Phase 3,2020-12-28,2021-01-06
+#'                        Phase 4,2021-01-06,2021-02-02")
+#'
+#' vistime(data, optimize_y = TRUE)
+#'
+#' # `FALSE` will plot events as-is, not saving any space:
+#' vistime(data, optimize_y = FALSE)
+#'
+#'
 #' # more complex and colorful example
 #' data <- read.csv(text = "event,group,start,end,color
 #' Phase 1,Project,2018-12-22,2018-12-23,#c8e6c9
@@ -86,8 +101,8 @@
 #' pp$x$layout$xaxis$tickfont <- list(size = 28)
 #' pp
 #'
-#' # Example 2: change y axis font size (several y-axes, therefore we need a loop):
-#' for (i in grep("yaxis*", names(pp$x$layout))) pp$x$layout[[i]]$tickfont <- list(size = 28)
+#' # Example 2: change y axis font size:
+#' pp$x$layout[["yaxis"]]$tickfont <- list(size = 28)
 #' pp
 #'
 #' # Example 3: Changing events font size
@@ -116,17 +131,13 @@
 #'
 vistime <- function(data, events = "event", start = "start", end = "end", groups = "group",
                     colors = "color", fontcolors = "fontcolor", tooltips = "tooltip",
-                    optimize_y = TRUE, linewidth = NULL, title = NULL, showLabels = NULL,
-                    show_labels = TRUE, lineInterval = NULL, background_lines = 10) {
-  data <- validate_input(data, start, end, events, groups, tooltips, optimize_y, linewidth, title, showLabels, show_labels, lineInterval, background_lines)
-  data <- set_colors(data, colors, fontcolors)
-  data <- fix_columns(data, events, start, end, groups, tooltips)
-  data <- set_subplots(data)
-  data <- set_y_values(data, optimize_y)
+                    optimize_y = TRUE, linewidth = NULL, title = NULL,
+                    show_labels = TRUE, background_lines = 10) {
 
-  ranges <- plot_ranges(data, linewidth, show_labels, background_lines)
-  events <- plot_events(data, show_labels, background_lines)
-  total <- plot_glued(data, title, ranges, events)
+
+  data <- validate_input(data, start, end, events, groups, tooltips, optimize_y, linewidth, title, show_labels, background_lines)
+  cleaned_dat <- vistime_data(data, events, start, end, groups, colors, fontcolors, tooltips, optimize_y)
+  total <- plot_plotly(cleaned_dat, linewidth, title, show_labels, background_lines)
 
   return(total)
 }

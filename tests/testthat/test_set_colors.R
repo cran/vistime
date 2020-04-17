@@ -1,5 +1,3 @@
-context("color tests")
-
 # preparations
 events <- "event"
 start <- "start"
@@ -11,9 +9,7 @@ tooltips <- "tooltip"
 optimize_y <- TRUE
 linewidth <- NULL
 title <- NULL
-showLabels <- NULL
 show_labels <- TRUE
-lineInterval <- NULL
 background_lines <- 11
 data <- data.frame(
   event = 1:4, start = c("2019-01-01", "2019-01-10"),
@@ -21,7 +17,7 @@ data <- data.frame(
   FARBE = c("red", "green"),
   stringsAsFactors = FALSE
 )
-data <- vistime:::validate_input(data, start, end, events, groups, tooltips, optimize_y, linewidth, title, showLabels, show_labels, lineInterval, background_lines)
+data <- vistime:::validate_input(data, start, end, events, groups, tooltips, optimize_y, linewidth, title, show_labels, background_lines)
 
 
 test_that("color columns not existing", {
@@ -44,4 +40,11 @@ test_that("fontcolor column existing", {
   expect_equal(result$fontcol, c("red", "green", "red", "green"))
 })
 
+
+test_that("trim whitespaces", {
+  fixed <- vistime:::set_colors(data.frame(event = "Event1", start = "2014-01-01", color = "   #676767"),
+                                        eventcolor_column = "color", fontcolor_column = "NOTHING")[, c("col", "fontcol")]
+
+  expect_equivalent(fixed, lapply(fixed, trimws))
+})
 
