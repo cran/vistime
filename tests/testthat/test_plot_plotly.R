@@ -1,5 +1,3 @@
-library(purrr)
-
 # test ranges
 dat <- data.frame(start = c("2019-01-01 00:00", "2019-01-01 04:00"),
                   end = c("2019-01-01 05:00", "2019-01-05 06:00"),
@@ -8,33 +6,33 @@ dat <- data.frame(start = c("2019-01-01 00:00", "2019-01-01 04:00"),
 test_that("class is htmlwidget", expect_is(vistime(dat), "htmlwidget"))
 
 test_that("background_lines",{
-  bg = 10
-  expect_equal(bg + 1,
-               keep(vistime(dat, background_lines = bg)$x$attrs, ~length(.x$y) == 2) %>% map("y") %>% keep(~.x[1] == 0 && .x[2] == 3) %>% length)
-  bg = 15
-  expect_equal(bg + 1,
-               keep(vistime(dat, background_lines = bg)$x$attrs, ~length(.x$y) == 2) %>% map("y") %>% keep(~.x[1] == 0 && .x[2] == 3) %>% length)
-  bg = 50
-  expect_equal(bg + 1,
-               keep(vistime(dat, background_lines = bg)$x$attrs, ~length(.x$y) == 2) %>% map("y") %>% keep(~.x[1] == 0 && .x[2] == 3) %>% length)
+  for(bg in c(1, 5, 10)){
+    expect_equal(bg + 2,
+                 length(suppressWarnings(plotly::plotly_build(vistime(dat, background_lines = bg))$x$layout$shapes)))
+  }
+
+  expect_true(plotly::plotly_build(vistime(dat, background_lines = NULL))$x$layout$xaxis$showgrid)
+  expect_false(plotly::plotly_build(vistime(dat, background_lines = 10))$x$layout$xaxis$showgrid)
 })
 
 
 test_that("color is same as in df", {
   dat$color <- "green"
-  expect_setequal(dat$color,
-                  vistime(dat)$x$attrs %>% keep(~.x$mode == "lines" & length(.x$x) == 2) %>% map_chr(~.x$line$color))
+  res <- c()
+  for(x in vistime(dat)$x$attrs) if(x$mode == "lines" && length(x$x) == 2) res <- c(res, x$line$color)
+  expect_setequal(res, dat$color)
 
   dat$color <- c("yellow", "blue")
-  expect_setequal(c("yellow", "blue"),
-                  vistime(dat)$x$attrs %>% keep(~.x$mode == "lines" & length(.x$x) == 2) %>% map_chr(~.x$line$color))
+  res <- c()
+  for(x in vistime(dat)$x$attrs) if(x$mode == "lines" && length(x$x) == 2) res <- c(res, x$line$color)
+  expect_setequal(res, c("yellow", "blue"))
 })
 
 test_that("start and end", {
-  expect_setequal(
-    dat[, c("start", "end")] %>% as.list() %>% map(as.character)%>% transpose %>% unlist %>% as.POSIXct() %>% as.integer,
-    vistime(dat)$x$attrs %>% keep(~.x$mode == "lines" & length(.x$y) == 1) %>% map("x") %>% unlist
-  )
+  res <- c()
+  for(x in vistime(dat)$x$attrs) if(x$mode == "lines" && length(x$y) == 1) res <- c(res, x$x)
+
+  expect_setequal(res,sapply(unlist(lapply(dat[c("start", "end")], as.character)), as.POSIXct))
 })
 
 
@@ -46,10 +44,9 @@ dat <- data.frame(
 
 test_that("data having no real events (only ranges)", {
   dat$end <- dat$start + 5
-  expect_equivalent(
-    vistime(dat)$x$attrs %>% keep(~.x$mode == "markers"),
-    list()
-  )
+  res <- list()
+  for(x in vistime(dat)$x$attrs) if(x$mode == "markers") res <- append(res, x)
+  expect_equivalent(res, list())
 })
 
 dat$end = NA
@@ -57,13 +54,20 @@ test_that("class is htmlwidget", expect_is(vistime(dat), "htmlwidget"))
 
 relevant_dat <- vistime(dat)$x$attrs
 
-test_that("Number of markers", expect_equivalent(keep(relevant_dat, ~.x$mode == "markers") %>% map("x") %>% map_int(length),
-                                            nrow(dat)))
+test_that("Number of markers", {
+  num_markers <- 0
+  for(x in relevant_dat) if(x$mode == "markers") num_markers <- num_markers + length(x$x)
+  expect_equal(num_markers, nrow(dat))
+})
 
-test_that("Symbol is circle", expect_equivalent(keep(relevant_dat, ~.x$mode == "markers") %>% map("marker") %>% map("symbol") %>% compact,
-                                                "circle"))
+test_that("Symbol is circle", {
+  res <- list()
+  for(x in relevant_dat) if(x$mode == "markers") res <- append(res, x$marker$symbol)
+  expect_equivalent(unique(res), "circle")
+})
 
-test_that("x Values", expect_setequal(as.integer(as.POSIXct(dat$start)),
-                                      keep(relevant_dat, ~.x$mode == "markers") %>% map("x") %>% unlist)
-)
-
+test_that("x Values", {
+  res <- list()
+  for(x in relevant_dat) if(x$mode == "markers") res <- c(res, as.integer(x$x))
+  expect_setequal(res, as.integer(as.POSIXct(dat$start)))
+})

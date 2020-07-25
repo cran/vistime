@@ -1,13 +1,13 @@
 #' Standardize column names
 #'
 #' @param data input data frame
-#' @param events event column name
-#' @param start name of start column
-#' @param end name of end column
-#' @param groups name of group column
-#' @param tooltips column name of tooltips
+#' @param col.event event column name (optional)
+#' @param col.start name of col.start column, default: "start"
+#' @param col.end name of end column (optional)
+#' @param col.group name of group column (optional)
+#' @param col.tooltip column name of tooltips (optional)
 #'
-#' @return the data frame prepared for plotting
+#' @return of the data frame prepared for plotting
 #'
 #' @keywords internal
 #' @noRd
@@ -16,65 +16,65 @@
 #' \dontrun{
 #' fix_columns(data.frame(
 #'   event = 1:4,
-#'   start = c("2019-01-01", "2019-01-10"),
-#'   end = c("2019-01-01", "2019-01-10"),
-#'   events = "event", start = "start", end = "end",
-#'   groups = "group", tooltips = "tooltip"
+#'   col.start = c("2019-01-01", "2019-01-10"),
+#'   col.end = c("2019-01-01", "2019-01-10"),
+#'   col.event = "event", col.start = "start", end = "end",
+#'   col.group = "group", col.tooltip = "tooltip"
 #' ))
 #' }
 #'
-fix_columns <- function(data, events, start, end, groups, tooltips) {
+fix_columns <- function(data, col.event, col.start, col.end, col.group, col.color,
+                        col.fontcolor, col.tooltip) {
 
-  # add additional columns
-  if (!groups %in% names(data)) {
-    data$group <- ""
-  } else if (any(is.na(data[, groups])))
-    stop("if using groups argument, all groups must be set to a non-NA value")
-  if (!end %in% names(data) | end == start) data$end <- data[, start]
+  # col.event -> "event"
+  data$event <- data[[col.event]]
 
-  # set column names
-  if (events == groups) {
-    data$group <- data[, groups]
-  } else {
-    names(data)[names(data) == groups] <- "group"
+  # col.start and col.end -> "start" and "end"
+  data$start <- data[[col.start]]
+  if (!is.null(col.end) && col.end %in% names(data)){
+    data$end <- data[[col.end]]
+  }else{
+    data$end <- data$start
   }
-  names(data)[names(data) == start] <- "start"
-  names(data)[names(data) == end] <- "end"
-  names(data)[names(data) == events] <- "event"
 
   data$start <- as.POSIXct(data$start)
   data$end <- as.POSIXct(data$end)
 
-  # convert to character if factor
+
+  # col.group -> "group"
+  if (col.group %in% names(data)){
+    data$group <- data[[col.group]]
+  }else{
+    data$group <- ""
+  }
+
+  data <- set_colors(data, col.color, col.fontcolor)
+
+  # convert all but times to character
   for (col in names(data)[!names(data) %in% c("start", "end")])
-    data[, col] <- as.character(data[, col])
+    data[[col]] <- as.character(data[[col]])
 
   # sort out missing end dates
   if (any(is.na(data$end)))
     data$end[is.na(data$end)] <- data$start[is.na(data$end)]
 
+
+  # col.tooltip -> "tooltip"
+  if (!is.null(col.tooltip) && col.tooltip %in% names(data)) {
+    data$tooltip <- data[[col.tooltip]]
+  } else {
+    data$tooltip <- ifelse(data$start == data$end,
+                           paste0("<b>", data$event, ": ", data$start, "</b>"),
+                           paste0("<b>", data$event, "</b><br>from <b>",
+                                  data$start, "</b> to <b>", data$end, "</b>")
+    )
+  }
+
   # remove leading and trailing whitespaces
   data$event <- trimws(data$event)
   data$group <- trimws(data$group)
 
-  # set tooltips
-  if (tooltips %in% names(data)) {
-    names(data)[names(data) == tooltips] <- "tooltip"
-  } else {
-    data$tooltip <- ifelse(data$start == data$end,
-      paste0("<b>", data$event, ": ", data$start, "</b>"),
-      paste0("<b>", data$event, "</b><br>from <b>",
-             data$start, "</b> to <b>", data$end, "</b>")
-    )
-  }
-
-  # shorten long labels
-  data$label <- ifelse(data$start == data$end,
-    ifelse(nchar(data$event) > 10,
-           paste0(substr(data$event, 1, 13), "..."),
-           data$event),
-    data$event
-  )
+  data$label <- data$event
 
   return(data[, c("event", "start", "end", "group", "tooltip", "label", "col", "fontcol")])
 }

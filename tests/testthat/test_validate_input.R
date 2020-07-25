@@ -1,146 +1,111 @@
 # unit tests for validate_input.R
 
+# shortcut that fills standard arguments
+validate_input2 <- function(data,
+                            col.event = "event",
+                            col.start = "start",
+                            col.end = "end",
+                            col.group = "group",
+                            col.color = "color",
+                            col.fontcolor = "fontcolor",
+                            col.tooltip = "tooltip",
+                            optimize_y = TRUE, linewidth = NULL, title = NULL,
+                            show_labels = TRUE, background_lines = NULL, ...){
+  validate_input(data, col.event, col.start, col.end, col.group, col.color,
+                 col.fontcolor, col.tooltip, optimize_y, linewidth, title,
+                 show_labels, background_lines, ...)
+}
+
+test_that("event defaults to start", {
+  expect_message(validate_input2(data.frame(start = Sys.Date())),
+                 "Column 'event' not found in data. Defaulting")
+  expect_equal(validate_input2(data.frame(start = Sys.Date()))$col.event,
+               "start")
+})
+
 # example data frame
 dat <- data.frame(event = 1:2, start = c("2019-01-01", "2019-01-02"))
 
-# standard arguments forwarded from main vistime call
-events <- "event"
-start <- "start"
-end <- "end"
-groups <- "group"
-colors <- "color"
-fontcolors <- "fontcolor"
-tooltips <- "tooltips"
-optimize_y <- TRUE
-linewidth <- NULL
-title <- "a title"
-show_labels <- TRUE
-background_lines <- 10
 
-test_that("stuff is actually there", {
-  expect_error(
-    validate_input(dat, start = "notexisting", end, events, groups, tooltips, optimize_y, linewidth, title,
-                             show_labels, background_lines),
-    "Please provide the name of the start date column in parameter 'start'"
-  )
-  start <- "start"
+test_that("Deprecated arguments are transferred to new arguments", {
+  expect_equal(suppressWarnings(validate_input2(dat, events = "event"))$col.event, "event")
+  expect_equal(suppressWarnings(validate_input2(dat, start = "start"))$col.start, "start")
+  expect_equal(suppressWarnings(validate_input2(dat, end = "start"))$col.end, "start")
+  expect_equal(suppressWarnings(validate_input2(dat, groups = "event"))$col.group, "event")
+  expect_equal(suppressWarnings(validate_input2(dat, colors = "event"))$col.color, "event")
+  expect_equal(suppressWarnings(validate_input2(dat, fontcolors = "event"))$col.fontcolor, "event")
+})
 
-  dat$mystart <- NA
-  expect_error(
-    validate_input(dat, start = "mystart", end, events, groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels, background_lines),
-    "error in start column: Please provide at least one point in time"
-  )
+test_that("missing columns are warned", {
+  expect_error(validate_input2(dat, col.start = "notexisting"), "Column 'notexisting' not found")
+  expect_message(validate_input2(dat, col.event = "notexisting"), "Column 'notexisting' not found")
 
-
-  expect_error(
-    validate_input(dat, start, end, events = "notexisting", groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels, background_lines),
-    "Please provide the name of the events column in parameter 'events'"
-  )
-
-  events <- "event"
 })
 
 test_that("data formats", {
 
-  expect_error(validate_input(tibble(), start, end, events = 1, groups,  tooltips, optimize_y, linewidth, title,
-                                        show_labels, background_lines),
-               "events is not of class 'character'; it has class 'numeric'")
-  expect_error(validate_input(tibble(), start, end=1, events, groups,  tooltips, optimize_y, linewidth, title,
-                                        show_labels, background_lines),
-               "end is not of class 'character'; it has class 'numeric'")
-  expect_error(validate_input(tibble(), start=1, end, events = 1, groups,  tooltips, optimize_y, linewidth, title,
-                                        show_labels, background_lines),
-               "start is not of class 'character'; it has class 'numeric'")
-  expect_error(validate_input(tibble(), start, end, events, groups=1,  tooltips, optimize_y, linewidth, title,
-                                        show_labels, background_lines),
-               "groups is not of class 'character'; it has class 'numeric'")
+  dat$mystart <- NA
+  expect_error(validate_input2(dat, col.start = "mystart"),
+               "error in column 'mystart': Please provide at least one point in time")
+  expect_error(validate_input2(tibble(), col.event = 1),
+               "col.event is not a string")
+  expect_error(validate_input2(tibble(), col.end=1),
+               "col.end is not a string")
+  expect_error(validate_input2(tibble(), col.event = 1, col.start=1),
+               "col.start is not a string")
+  expect_error(validate_input2(tibble(), col.group=1),
+               "col.group is not a string")
 
   expect_error(
-    validate_input(plotly::plot_ly(), start, end, events, groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels, background_lines),
-    "Expected an input data frame, but encountered plotly"
+    validate_input2(plotly::plot_ly()), "Expected an input data frame, but encountered plotly"
   )
 
   expect_error(
-    validate_input(dat, start, end, events, groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels = NULL, background_lines),
-    "show_labels is not of class 'logical'"
+    validate_input2(dat, show_labels = NULL), "show_labels is not a flag"
   )
 
   expect_error(
-    validate_input(dat, start, end, events, groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels = "yes", background_lines),
-    "show_labels is not of class 'logical'"
+    validate_input2(dat, show_labels = "yes"), "show_labels is not a flag"
   )
 
   expect_error(
-    validate_input(dat, start, end, events, groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels = "TRUE", background_lines),
-    "show_labels is not of class 'logical'"
+    validate_input2(dat, show_labels = "TRUE"), "show_labels is not a flag"
   )
 
   expect_error(
-    validate_input(dat, start, end, events, groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels, background_lines = "11"),
-    "background_lines is not of class 'numeric'"
-  )
-
-  expect_warning(
-    validate_input(dat, start, end, events, groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels, background_lines = 11.5),
-    "background_lines was not integer."
-  )
-
-
-  expect_error(
-    validate_input(dat, start, end, events, groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels, background_lines = TRUE),
-    "background_lines is not of class 'numeric'"
+    validate_input2(dat, background_lines = "11"), "background_lines is not a numeric or integer vector"
   )
 
   expect_error(
-    validate_input(data.frame(mystart = "20180101"), start = "mystart",
-                             end, events, groups,  tooltips, optimize_y, linewidth, title, show_labels, background_lines),
-    "date format error: please make sure columns mystart and end can be converted to POSIX"
+    validate_input2(dat, background_lines = TRUE), "background_lines is not a numeric or integer vector"
   )
 
   expect_error(
-    validate_input(dat, start, end, events, groups,  tooltips, optimize_y, linewidth = "g", title,
-                             show_labels, background_lines),
-    "linewidth is not of class 'numeric'"
+    validate_input2(data.frame(mystart = "20180101"), col.event = "mystart", col.start = "mystart"),
+    "date format error: please make sure column 'mystart' can be converted to POSIX"
   )
 
   expect_error(
-    validate_input(dat, start, end, events, groups,  tooltips, optimize_y, linewidth = "5", title,
-                             show_labels, background_lines = TRUE),
-    "linewidth is not of class 'numeric'"
+    validate_input2(dat, linewidth = "g"), "linewidth is not a numeric or integer vector"
   )
 
   expect_error(
-    validate_input(dat, start, end, events, groups, tooltips, optimize_y,  linewidth, title = ggplot2::ggtitle("test"),
-                             show_labels, background_lines = TRUE),
-    "title is not of class 'character'"
+    validate_input2(dat, linewidth = "5"), "linewidth is not a numeric or integer vector"
+  )
+
+  expect_error(
+    validate_input2(dat, background_lines = TRUE), "background_lines is not a numeric or integer vector"
+  )
+
+  expect_error(
+    validate_input2(dat, title = ggplot2::ggtitle("test")), "title is not a string"
   )
 })
 
 test_that("return value", {
-  expect_is(
-    validate_input(dat, start, end, events, groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels, background_lines),
-    "data.frame"
-  )
-
-  expect_is(
-    validate_input(as.matrix(dat), start, end, events, groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels, background_lines),
-    "data.frame"
-  )
-
-  expect_equal(
-    validate_input(dat[1, ], start, end, events, groups,  tooltips, optimize_y, linewidth, title,
-                             show_labels, background_lines),
-    dat[1, ]
-  )
+  expect_is(validate_input2(dat), "list")
+  expect_length(validate_input2(dat), 8)
+  expect_is(validate_input2(dat)$data, "data.frame")
+  expect_equal(validate_input2(dat[1, ])$dat,dat[1, ])
+  expect_warning(validate_input2(dat, testarg = "test"), "unexpected arguments were ignored")
 })
