@@ -10,9 +10,11 @@
 #' @param title plot title
 #' @param show_labels logical
 #' @param background_lines interval of gray background lines
-#' @importFrom assertthat is.string
-#' @importFrom assertthat is.flag
-#' @importFrom assertthat assert_that
+#' @importFrom assertive.types assert_is_a_string
+#' @importFrom assertive.types assert_is_data.frame
+#' @importFrom assertive.types assert_is_a_number
+#' @importFrom assertive.types assert_is_logical
+#' @importFrom assertive.types assert_is_posixct
 #'
 #' @return list of the data frame and column arguments, or an error
 #' @keywords internal
@@ -27,9 +29,7 @@
 #' }
 validate_input <- function(data, col.event, col.start, col.end, col.group, col.color,
                            col.fontcolor, col.tooltip, optimize_y, linewidth, title,
-                           show_labels, background_lines, ...) {
-
-  .dots = list(...)
+                           show_labels, background_lines, .dots) {
 
   if("events" %in% names(.dots)){
     .Deprecated(new = "col.event", old = "events")
@@ -74,26 +74,24 @@ validate_input <- function(data, col.event, col.start, col.end, col.group, col.c
     .Deprecated(new = "show_labels", old = "showLabels")
     .dots$showLabels <- NULL
   }
-  if(length(.dots) > 0) warning("The following unexpected arguments were ignored: ",
-                                paste(names(.dots), collapse = ", "))
+  if(length(.dots) > 0) message("The following unexpected arguments were ignored by vistime: ", paste(names(.dots), collapse = ", "))
 
-  assert_that(is.string(col.start))
-  assert_that(is.string(col.end))
-  assert_that(is.string(col.event))
-  assert_that(is.string(col.group))
-  if(!is.null(col.tooltip)) assert_that(is.string(col.tooltip))
-  assert_that(is.flag(optimize_y))
+  assert_is_a_string(col.start)
+  assert_is_a_string(col.end)
+  assert_is_a_string(col.event)
+  assert_is_a_string(col.group)
+  if(!is.null(col.tooltip)) assert_is_a_string(col.tooltip)
+  assert_is_logical(optimize_y)
 
   # missing if called from vistime_data
-  if(!missing(linewidth) && !is.null(linewidth)) assert_that(is.numeric(linewidth))
-  if(!missing(title) && !is.null(title)) assert_that(is.string(title))
-  if(!missing(show_labels)) assert_that(is.flag(show_labels))
-  if(!missing(background_lines) && !is.null(background_lines)) assert_that(is.numeric(background_lines))
+  if(!missing(linewidth) && !is.null(linewidth)) assert_is_a_number(linewidth)
+  if(!missing(title) && !is.null(title)) assert_is_a_string(title)
+  if(!missing(show_labels)) assert_is_logical(show_labels)
+  if(!missing(background_lines) && !is.null(background_lines)) assert_is_a_number(background_lines)
 
-  if ("try-error" %in% class(try(as.data.frame(data), silent = T)))
-    stop(paste("Expected an input data frame, but encountered", class(data)[1]))
+  df <- tryCatch(as.data.frame(data, stringsAsFactors = F), error = function(e) assert_is_data.frame(data))
+  assert_is_data.frame(df)
 
-  df <- as.data.frame(data, stringsAsFactors = F)
 
   if (!col.start %in% names(df))
     stop("Column '", col.start, "' not found in data")
@@ -101,8 +99,8 @@ validate_input <- function(data, col.event, col.start, col.end, col.group, col.c
   if (sum(!is.na(df[[col.start]])) == 0)
     stop(paste0("error in column '", col.start, "': Please provide at least one point in time"))
 
-  if ("try-error" %in% class(try(as.POSIXct(df[[col.start]]), silent = T)))
-    stop("date format error: please make sure column '", col.start, "' can be converted to POSIXct type")
+  df[[col.start]] <- tryCatch(as.POSIXct(df[[col.start]]), error = function(e) assert_is_posixct(df[[col.start]]))
+  assert_is_posixct(df[[col.start]])
 
   if (!col.event %in% names(df)){
     message("Column '", col.event, "' not found in data. Defaulting to col.event='", col.start, "'")

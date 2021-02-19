@@ -1,6 +1,6 @@
-#' Create a Timeline rendered by ggplot
+#' Create a Timeline rendered by ggplot2
 #'
-#' Provide a data frame with event data to create a static timeline plot.
+#' Provide a data frame with event data to create a static timeline plot created by ggplot2.
 #' Simplest drawable dataframe can have columns `event` and `start`.
 #'
 #' @param data \code{data.frame} that contains the data to be visualized
@@ -28,6 +28,7 @@
 #'   visible. Default: \code{TRUE}.
 #' @param background_lines (optional, integer) the number of vertical lines to draw in the background to demonstrate structure (default: heuristic).
 #' @param ... for deprecated arguments up to vistime 1.1.0 (like events, colors, ...)
+#' @seealso Functions \code{?vistime} and \code{?hc_vistime} for different charting engines (Plotly and Highcharts).
 #' @export
 #' @return \code{gg_vistime} returns an object of class \code{gg} and \code{ggplot}.
 #' @examples
@@ -75,7 +76,7 @@ gg_vistime <- function(data,
 
   checked_dat <- validate_input(data, col.event, col.start, col.end, col.group, col.color,
                                 col.fontcolor, col.tooltip = NULL, optimize_y, linewidth, title,
-                                show_labels, background_lines, ...)
+                                show_labels, background_lines, list(...))
 
   cleaned_dat <- vistime_data(checked_dat$data, checked_dat$col.event, checked_dat$col.start,
                               checked_dat$col.end, checked_dat$col.group, checked_dat$col.color,

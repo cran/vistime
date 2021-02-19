@@ -1,6 +1,6 @@
 #' Create a Timeline rendered by Plotly
 #'
-#' Provide a data frame with event data to create a visual and interactive timeline plot.
+#' Provide a data frame with event data to create a visual and interactive timeline plot rendered by Plotly.
 #' Simplest drawable dataframe can have columns `event` and `start`.
 #'
 #' @param data \code{data.frame} that contains the data to be visualized
@@ -20,7 +20,7 @@
 #'   color will be black.
 #' @param col.tooltip (optional, character) the column name in \code{data} that contains the
 #'   mouseover tooltips for the events. Default: \emph{tooltip}, if not present,
-#'   then tooltips are build from event name and date.
+#'   then tooltips are built from event name and date.
 #' @param optimize_y (optional, logical) distribute events on y-axis by smart heuristic
 #'   (default), otherwise use order of input data.
 #' @param linewidth (optional, numeric) the linewidth (in pixel) for the events
@@ -32,9 +32,9 @@
 #' @param background_lines (optional, integer) the number of vertical lines to draw in the
 #'   background to demonstrate structure (default: 10). Less means more memory-efficient plot.
 #' @param ... for deprecated arguments up to vistime 1.1.0 (like events, colors, ...)
+#' @seealso Functions \code{?hc_vistime} and \code{?gg_vistime} for different charting engines (Highcharts and ggplot2).
 #' @export
 #' @return \code{vistime} returns an object of class \code{plotly} and \code{htmlwidget}.
-#'  See `gg_vistime` for the static `ggplot` version.
 #' @examples
 #' # presidents and vice presidents
 #' pres <- data.frame(
@@ -143,7 +143,7 @@ vistime <- function(data,
 
   checked_dat <- validate_input(data, col.event, col.start, col.end, col.group, col.color,
                                 col.fontcolor, col.tooltip, optimize_y, linewidth, title,
-                                show_labels, background_lines, ...)
+                                show_labels, background_lines, list(...))
 
   cleaned_dat <- vistime_data(checked_dat$data, checked_dat$col.event, checked_dat$col.start,
                               checked_dat$col.end, checked_dat$col.group, checked_dat$col.color,

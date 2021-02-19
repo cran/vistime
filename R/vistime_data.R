@@ -17,7 +17,7 @@
 #'   color will be black.
 #' @param col.tooltip (optional, character) the column name in \code{data} that contains the
 #'   mouseover tooltips for the events. Default: \emph{tooltip}, if not present,
-#'   then tooltips are build from event name and date.
+#'   then tooltips are built from event name and date.
 #' @param optimize_y (optional, logical) distribute events on y-axis by smart heuristic (default), otherwise use order of input data.
 #' @param ... for deprecated arguments up to vistime 1.1.0 (like events, colors, ...)
 #' @export
@@ -47,8 +47,8 @@ vistime_data <- function(data,
                          optimize_y = TRUE, ...) {
 
   checked_dat <- validate_input(data, col.event, col.start, col.end, col.group, col.color,
-                                col.fontcolor, col.tooltip, optimize_y, linewidth=0, title="",
-                                show_labels=T, background_lines=0, ...)
+                                col.fontcolor, col.tooltip, optimize_y, linewidth = 0, title="",
+                                show_labels = T, background_lines = 0, list(...))
 
   data <- fix_columns(checked_dat$data, checked_dat$col.event, checked_dat$col.start, checked_dat$col.end,
                       checked_dat$col.group, checked_dat$col.color, checked_dat$col.fontcolor,

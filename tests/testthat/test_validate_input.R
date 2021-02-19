@@ -13,13 +13,13 @@ validate_input2 <- function(data,
                             show_labels = TRUE, background_lines = NULL, ...){
   validate_input(data, col.event, col.start, col.end, col.group, col.color,
                  col.fontcolor, col.tooltip, optimize_y, linewidth, title,
-                 show_labels, background_lines, ...)
+                 show_labels, background_lines, list(...))
 }
 
 test_that("event defaults to start", {
   expect_message(validate_input2(data.frame(start = Sys.Date())),
                  "Column 'event' not found in data. Defaulting")
-  expect_equal(validate_input2(data.frame(start = Sys.Date()))$col.event,
+  expect_equal(suppressMessages(validate_input2(data.frame(start = Sys.Date()))$col.event),
                "start")
 })
 
@@ -48,64 +48,63 @@ test_that("data formats", {
   expect_error(validate_input2(dat, col.start = "mystart"),
                "error in column 'mystart': Please provide at least one point in time")
   expect_error(validate_input2(tibble(), col.event = 1),
-               "col.event is not a string")
+               "col.event is not of class 'character'")
   expect_error(validate_input2(tibble(), col.end=1),
-               "col.end is not a string")
+               "col.end is not of class 'character'")
   expect_error(validate_input2(tibble(), col.event = 1, col.start=1),
-               "col.start is not a string")
+               "col.start is not of class 'character'")
   expect_error(validate_input2(tibble(), col.group=1),
-               "col.group is not a string")
+               "col.group is not of class 'character'")
 
   expect_error(
-    validate_input2(plotly::plot_ly()), "Expected an input data frame, but encountered plotly"
+    validate_input2(plotly::plot_ly()), "data is not of class 'data.frame'"
   )
 
   expect_error(
-    validate_input2(dat, show_labels = NULL), "show_labels is not a flag"
+    validate_input2(dat, show_labels = NULL), "show_labels is not of class 'logical'"
   )
 
   expect_error(
-    validate_input2(dat, show_labels = "yes"), "show_labels is not a flag"
+    validate_input2(dat, show_labels = "yes"), "show_labels is not of class 'logical'"
   )
 
   expect_error(
-    validate_input2(dat, show_labels = "TRUE"), "show_labels is not a flag"
+    validate_input2(dat, show_labels = "TRUE"), "show_labels is not of class 'logical'"
   )
 
   expect_error(
-    validate_input2(dat, background_lines = "11"), "background_lines is not a numeric or integer vector"
+    validate_input2(dat, background_lines = "11"), "background_lines is not of class 'numeric'"
   )
 
   expect_error(
-    validate_input2(dat, background_lines = TRUE), "background_lines is not a numeric or integer vector"
+    validate_input2(dat, background_lines = TRUE), "background_lines is not of class 'numeric'"
   )
 
   expect_error(
     validate_input2(data.frame(mystart = "20180101"), col.event = "mystart", col.start = "mystart"),
-    "date format error: please make sure column 'mystart' can be converted to POSIX"
+    "is not of class 'POSIXct'"
   )
 
   expect_error(
-    validate_input2(dat, linewidth = "g"), "linewidth is not a numeric or integer vector"
+    validate_input2(dat, linewidth = "g"), "linewidth is not of class 'numeric'"
   )
 
   expect_error(
-    validate_input2(dat, linewidth = "5"), "linewidth is not a numeric or integer vector"
+    validate_input2(dat, linewidth = "5"), "linewidth is not of class 'numeric'"
   )
 
   expect_error(
-    validate_input2(dat, background_lines = TRUE), "background_lines is not a numeric or integer vector"
+    validate_input2(dat, background_lines = TRUE), "background_lines is not of class 'numeric'"
   )
 
   expect_error(
-    validate_input2(dat, title = ggplot2::ggtitle("test")), "title is not a string"
+    validate_input2(dat, title = ggplot2::ggtitle("test")), "title is not of class 'character'"
   )
 })
 
 test_that("return value", {
-  expect_is(validate_input2(dat), "list")
+  expect_type(validate_input2(dat), "list")
   expect_length(validate_input2(dat), 8)
-  expect_is(validate_input2(dat)$data, "data.frame")
-  expect_equal(validate_input2(dat[1, ])$dat,dat[1, ])
-  expect_warning(validate_input2(dat, testarg = "test"), "unexpected arguments were ignored")
+  expect_s3_class(validate_input2(dat)$data, "data.frame")
+  expect_message(validate_input2(dat, testarg = "test"), "unexpected arguments were ignored")
 })

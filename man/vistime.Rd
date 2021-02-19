@@ -46,7 +46,7 @@ color will be black.}
 
 \item{col.tooltip}{(optional, character) the column name in \code{data} that contains the
 mouseover tooltips for the events. Default: \emph{tooltip}, if not present,
-then tooltips are build from event name and date.}
+then tooltips are built from event name and date.}
 
 \item{optimize_y}{(optional, logical) distribute events on y-axis by smart heuristic
 (default), otherwise use order of input data.}
@@ -67,10 +67,9 @@ background to demonstrate structure (default: 10). Less means more memory-effici
 }
 \value{
 \code{vistime} returns an object of class \code{plotly} and \code{htmlwidget}.
- See `gg_vistime` for the static `ggplot` version.
 }
 \description{
-Provide a data frame with event data to create a visual and interactive timeline plot.
+Provide a data frame with event data to create a visual and interactive timeline plot rendered by Plotly.
 Simplest drawable dataframe can have columns `event` and `start`.
 }
 \examples{
@@ -168,4 +167,7 @@ for(i in marker_idx) pp$x$data[[i]]$marker$size <- 40
 pp
 }
 
+}
+\seealso{
+Functions \code{?hc_vistime} and \code{?gg_vistime} for different charting engines (Highcharts and ggplot2).
 }
