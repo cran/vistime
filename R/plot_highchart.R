@@ -19,11 +19,6 @@
 #' }
 plot_highchart <- function(data, title, show_labels){
 
-  if (!requireNamespace("highcharter", quietly = TRUE)) {
-    stop("The `highcharter` package is required for creating `hc_vistime()` objects.",
-         call. = FALSE)
-  }
-
   # let an event be 1/50th of total timeline range
   data$end <- with(data, ifelse(start != end, end, end + diff(range(c(start, end)))/50))
 
@@ -33,7 +28,7 @@ plot_highchart <- function(data, title, show_labels){
   data$color = data$col
 
   cats <- round(tapply(data$y, data$group, mean))
-  y_vals <- names(sort(c(cats, setdiff(seq_len(max(data$y)), cats))))
+  y_vals <- names(sort(c(cats, setdiff(seq_len(max(data$y)), cats)), decreasing=TRUE))
 
   highcharter::hc_chart(
     highcharter::hc_title(
