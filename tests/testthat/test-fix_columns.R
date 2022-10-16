@@ -38,7 +38,7 @@ test_that("new columns", {
     cols_expected
   )
 
-  expect_equal(groups_equal_events$event, groups_equal_events$group)
+  expect_equal(groups_equal_events$event, as.character(groups_equal_events$group))
 })
 
 
@@ -79,5 +79,41 @@ test_that("tooltips", {
 
   dat$MYTOOLTIPS <- 1:2
   expect_equal(fix_columns2(dat, col.tooltip = "MYTOOLTIPS")$tooltip, as.character(1:2))
+})
+
+test_that("whitespace is trimmed", {
+  dat <- data.frame(event = c("a", "  b"),
+                    start = c("2019-01-05", "2019-01-06"),
+                    groups = c("a", "  a"), 
+                    stringsAsFactors = TRUE)
+  expect_equal(fix_columns2(dat, col.group = "groups")$group, factor(c("a", "a"), levels = "a"))
+  expect_equal(fix_columns2(dat, col.group = "groups")$event, c("a", "b"))
+})
+
+test_that('Group column remains unchanged', {
+    dat <- data.frame(
+        event = c("Event B", "Event A", "Event C"),
+        start = c("1789-03-29", "1797-02-03", "1801-02-03"),
+        end = c("1797-02-03", "1801-02-03", "1809-02-03"),
+        group = factor(c('b', 'a', 'c'), levels = c('a', 'b', 'c'))
+        )
+    expect_equal(fix_columns2(dat)$group,
+                 factor(c('b', 'a', 'c'), levels = c('a', 'b', 'c')))
+    dat <- data.frame(
+        event = c("Event B", "Event A", "Event C"),
+        start = c("1789-03-29", "1797-02-03", "1801-02-03"),
+        end = c("1797-02-03", "1801-02-03", "1809-02-03"),
+        group = c('b', 'a', 'c')
+        )
+    expect_equal(fix_columns2(dat)$group,
+                 c('b', 'a', 'c'))
+    dat <- data.frame(
+        event = c("Event B", "Event A", "Event C"),
+        start = c("1789-03-29", "1797-02-03", "1801-02-03"),
+        end = c("1797-02-03", "1801-02-03", "1809-02-03"),
+        group = 1:3
+        )
+    expect_equal(fix_columns2(dat)$group,
+                 as.character(1:3))
 })
 

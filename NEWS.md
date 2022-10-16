@@ -1,11 +1,18 @@
+# vistime 1.2.3
+- keep group column order in case of factors (otherwise groups appear in order of appearance) (closes #27, thanks @kelly-sovacool)
+
+# vistime 1.2.2
+## Bugfixes
+- added `markdown` dependency for vignette building as per [yhui/knitr#1864](https://github.com/yihui/knitr/issues/1864)
+
 # vistime 1.2.1
 ## Bugfixes
-- Hotfix: y axis order was incorrectly inverted in `hc_vistime()` (#24)
+- `hc_vistime()` labels on y-axis were incorrectly reversed (#24)
 
 # vistime 1.2.0
 
 ## Breaking Changes
-- `highcharter` is no more installed by default when you install `vistime`.
+- `highcharter` is no more installed by default when you install `vistime`
 
 ## Bugfixes
 - `optimize_y = TRUE` did not work correctly for ranges that occur during other ranges (issue #22)
