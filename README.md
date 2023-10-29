@@ -6,7 +6,7 @@
 [![Downloads per month](https://cranlogs.r-pkg.org/badges/last-month/vistime)](https://www.r-pkg.org/pkg/vistime)
 [![Downloads per week](https://cranlogs.r-pkg.org/badges/last-week/vistime)](https://www.r-pkg.org/pkg/vistime)
 [![Downloads per day](https://cranlogs.r-pkg.org/badges/last-day/vistime)](https://www.r-pkg.org/pkg/vistime)
-[![codecov](https://codecov.io/github/shosaco/vistime/branch/master/graphs/badge.svg)](https://codecov.io/github/shosaco/vistime)
+[![codecov](https://codecov.io/github/shosaco/vistime/branch/master/graphs/badge.svg)](https://app.codecov.io/github/shosaco/vistime)
 [![Github Stars](https://img.shields.io/github/stars/shosaco/vistime.svg)](https://github.com/shosaco/vistime)
 
 A library for creating time-based charts, like Gantt or timelines. Possible outputs include `ggplot`s, `plotly` graphs, `Highcharts` or data.frames. Results can be used in the RStudio viewer pane, in R Markdown documents or in Shiny apps. In the interactive outputs created by `vistime()` and `hc_vistime()` you can interact with the plot using mouse hover or zoom. Timelines and their components can afterwards be manipulated using `ggplot::theme()`, `plotly_build()` or `hc_*`functions (for `gg_vistime()`, `vistime()` or `hc_vistime()`, respectively). When choosing the `data.frame` output, you can use your own plotting engine for visualizing the graph.
@@ -108,6 +108,7 @@ During COVID-19 2020, [@wlhamilton](https://github.com/wlhamilton) used `gg_vist
 
 <img src="man/figures/ward_movements.png" width="500" height="283"/>
 
+<!--
 ## 4. Usage and documentation
 
 There is a vignette for each of the three functions of the package where they are explained in detail:
@@ -116,3 +117,4 @@ There is a vignette for each of the three functions of the package where they ar
 - `gg_vistime()` for static **ggplot2** output: [Link to manual](https://CRAN.R-project.org/package=vistime/vignettes/gg_vistime-vignette.html)
 - `hc_vistime()` for interactive **Highcharts** output: [Link to manual](https://CRAN.R-project.org/package=vistime/vignettes/hc_vistime-vignette.html)
 
+-->

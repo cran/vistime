@@ -1,3 +1,7 @@
+# vistime 1.2.4
+## Bugfixes
+- Fix failing dependency by exchanging package usage of `assertive.types` with `assertthat`
+
 # vistime 1.2.3
 - keep group column order in case of factors (otherwise groups appear in order of appearance) (closes #27, thanks @kelly-sovacool)
 
@@ -19,12 +23,12 @@
 
 ## New features
 - Added mouse zooming capability to `hc_vistime()`
-- Split the `README.md` into three vignettes:
+<!-- - Split the `README.md` into three vignettes:
   - [`vistime()` manual](https://CRAN.R-project.org/package=vistime/vignettes/vistime-vignette.html)
   - [`gg_vistime()` manual](https://CRAN.R-project.org/package=vistime/vignettes/gg_vistime-vignette.html)
   - [`hc_vistime()` manual](https://CRAN.R-project.org/package=vistime/vignettes/hc_vistime-vignette.html)
 
-
+-->
 ## Minor adjustments
 - Updated documentation
 - Internals: 
