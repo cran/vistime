@@ -94,6 +94,8 @@ vistime(data, optimize_y = FALSE, linewidth = 25)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  library(vistime)
+#  library(shiny)
+#  library(plotly)
 #  
 #  pres <- data.frame(Position = rep(c("President", "Vice"), each = 3),
 #                     Name = c("Washington", rep(c("Adams", "Jefferson"), 2), "Burr"),
@@ -103,11 +105,20 @@ vistime(data, optimize_y = FALSE, linewidth = 25)
 #                     fontcolor = c("black", "white", "black"))
 #  
 #  shinyApp(
-#    ui = plotly::plotlyOutput("myVistime"),
+#    ui = basicPage("",
+#                   mainPanel(plotlyOutput("my_plot"),
+#                             verbatimTextOutput("clicked_info"))),
 #    server = function(input, output) {
-#      output$myVistime <- plotly::renderPlotly({
-#        vistime(pres, col.event = "Position", col.group = "Name")
+#      output$my_plot <- plotly::renderPlotly({
+#        vistime(pres, col.event = "Position", col.group = "Name", source = "my_plot", customdata = "some_information")
 #      })
+#  
+#      output$clicked_info <- renderPrint({
+#              click_data <- event_data("plotly_click", source = "my_plot")
+#              req(click_data)
+#              message("CLICK!")
+#              click_data
+#          })
 #    }
 #  )
 

@@ -38,8 +38,7 @@ hc_vistime(timeline_data)
 #                     Name = c("Washington", rep(c("Adams", "Jefferson"), 2), "Burr"),
 #                     start = c("1789-03-29", "1797-02-03", "1801-02-03"),
 #                     end = c("1797-02-03", "1801-02-03", "1809-02-03"),
-#                     color = c('#cbb69d', '#603913', '#c69c6e'),
-#                     fontcolor = c("black", "white", "black"))
+#                     color = c('#cbb69d', '#603913', '#c69c6e'))
 #  
 #  hc_vistime(pres,
 #             col.event = "Position",
@@ -52,8 +51,7 @@ pres <- data.frame(Position = rep(c("President", "Vice"), each = 3),
                    Name = c("Washington", rep(c("Adams", "Jefferson"), 2), "Burr"),
                    start = c("1789-03-29", "1797-02-03", "1801-02-03"),
                    end = c("1797-02-03", "1801-02-03", "1809-02-03"),
-                   color = c('#cbb69d', '#603913', '#c69c6e'),
-                   fontcolor = c("black", "white", "black"))
+                   color = c('#cbb69d', '#603913', '#c69c6e'))
                   
 hc_vistime(pres, 
            col.event = "Position", 
@@ -139,8 +137,7 @@ hc_vistime(data, optimize_y = FALSE)
 #                     Name = c("Washington", rep(c("Adams", "Jefferson"), 2), "Burr"),
 #                     start = c("1789-03-29", "1797-02-03", "1801-02-03"),
 #                     end = c("1797-02-03", "1801-02-03", "1809-02-03"),
-#                     color = c('#cbb69d', '#603913', '#c69c6e'),
-#                     fontcolor = c("black", "white", "black"))
+#                     color = c('#cbb69d', '#603913', '#c69c6e'))
 #  
 #  shinyApp(
 #    ui = highcharter::highchartOutput("myVistime"),

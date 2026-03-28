@@ -34,7 +34,8 @@ Default: \emph{end}.}
 grouping. Default: \emph{group}.}
 
 \item{col.color}{(optional, character) the column name in \code{data} that contains colors
-for events. Default: \emph{color}, if not present, colors are chosen via
+for events. Can be hex codes (e.g., "#FF0000"), named colors (e.g., "red"), or categorical
+data to be auto-colored. Default: \emph{color}, if not present, colors are chosen via
 \code{RColorBrewer}.}
 
 \item{col.tooltip}{(optional, character) the column name in \code{data} that contains the
@@ -59,7 +60,7 @@ visible. Default: \code{TRUE}.}
 Provide a data frame with event data to create a visual and interactive timeline plot
 rendered by Highcharts. Simplest drawable dataframe can have columns `event` and `start`.
 This feature is facilitated by the `highcharter` package, so, this package needs to be
-installed before attempting to produce any `hc_vistime()` output.
+installed before attempting to produce any `hc_vistime()` output. Note that the argument `col.fontcolor` is not supported here.
 }
 \examples{
 # presidents and vice presidents

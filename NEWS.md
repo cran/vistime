@@ -1,3 +1,12 @@
+# vistime 1.3.0
+
+## New features
+- `vistime()` passes `source` and `customdata` to plot for interactive `Plotly` click or hover events in Shiny (closes #34, thanks @jonocarroll).
+- `col.color` argument can now also refer to a categorical column, not a column containing color names or codes. This way, you can color the plot by a given column without providing explicit colors (closes #20).
+
+## Bugfixes
+- Now asserts that `col.color` and `col.fontcolor` are string type, i.e. `vistime(dat, col.color = color_column)` fails and `vistime(dat, col.color = "color_column")` succeeds. This was implemented for the other columns already.
+
 # vistime 1.2.4
 ## Bugfixes
 - Fix failing dependency by exchanging package usage of `assertive.types` with `assertthat`
@@ -23,12 +32,12 @@
 
 ## New features
 - Added mouse zooming capability to `hc_vistime()`
-<!-- - Split the `README.md` into three vignettes:
+- Split the `README.md` into three vignettes:
   - [`vistime()` manual](https://CRAN.R-project.org/package=vistime/vignettes/vistime-vignette.html)
   - [`gg_vistime()` manual](https://CRAN.R-project.org/package=vistime/vignettes/gg_vistime-vignette.html)
   - [`hc_vistime()` manual](https://CRAN.R-project.org/package=vistime/vignettes/hc_vistime-vignette.html)
 
--->
+
 ## Minor adjustments
 - Updated documentation
 - Internals: 
